@@ -1,0 +1,29 @@
+.btn {
+	padding: 1rem 3rem;
+	font-size: 1.6rem;
+	cursor: pointer;
+	border: 0;
+	transition: 0.3s;
+
+	&__primary {
+		background-color: $color-text-primary;
+		color: #fff;
+		box-shadow: 5px 5px 0 lighten($color-text-primary, 10%);
+	}
+
+	&__primary:hover {
+		background-color: darken($color-text-primary, 10%);
+	}
+
+	&__secondary {
+		background-color: #fff;
+		border: 2px solid $color-text-primary;
+		box-shadow: 5px 5px 0 $color-text-primary;
+	}
+
+	&__secondary:hover {
+		background-color: $color-text-primary;
+		color: #fff;
+		box-shadow: 5px 5px 0 darken($color-text-primary, 10%);
+	}
+}

@@ -1,0 +1,40 @@
+.auth {
+	position: relative;
+	min-height: 90vh;
+	background: url('../../images/blob.svg');
+	background-size: 100%;
+	background-position: center;
+
+	&__form {
+		display: flex;
+		flex-direction: column;
+		position: absolute;
+		min-width: 40rem;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background-color: $color-light;
+		padding: 3rem;
+		border-radius: 10px;
+		gap: 1rem;
+
+		.auth__title {
+			color: $color-text-primary;
+			font-size: 3.2rem;
+			text-align: center;
+			margin-bottom: 2rem;
+		}
+
+		.auth__siblings {
+			display: flex;
+			gap: 2rem;
+		}
+
+		.auth__btns {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 2rem;
+			margin-top: 2rem;
+		}
+	}
+}

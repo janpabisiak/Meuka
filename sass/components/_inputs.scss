@@ -1,0 +1,11 @@
+.input {
+	padding: 1.5rem;
+	border-radius: 3px;
+	outline: 0;
+	border: 0;
+	transition: background-color 0.3s;
+
+	&:focus {
+		background-color: darken(#fff, 3%);
+	}
+}

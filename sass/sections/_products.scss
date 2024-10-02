@@ -1,0 +1,55 @@
+.products {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	column-gap: 1rem;
+	row-gap: 6rem;
+	padding: 5rem 0;
+
+	&__item {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		cursor: pointer;
+
+		&__image {
+			position: relative;
+			height: 40rem;
+			width: 30rem;
+
+			& img {
+				position: absolute;
+				height: 100%;
+				width: 100%;
+				object-fit: cover;
+				transition: opacity 0.3s ease-in-out;
+			}
+
+			.default-image {
+				opacity: 1;
+				z-index: 1;
+			}
+
+			.hover-image {
+				opacity: 0;
+				z-index: 1;
+			}
+
+			&:hover .default-image {
+				opacity: 0;
+			}
+
+			&:hover .hover-image {
+				opacity: 1;
+			}
+		}
+
+		&__title {
+			font-size: 2rem;
+			color: $color-text-primary;
+		}
+
+		&__price {
+			font-size: 1.6rem;
+		}
+	}
+}
