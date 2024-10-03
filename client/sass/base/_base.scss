@@ -18,6 +18,11 @@ body {
 	color: $color-text-secondary;
 }
 
+a,
+a:visited {
+	text-decoration: none;
+}
+
 .open-icon,
 .close-icon {
 	font-size: 1.6rem;

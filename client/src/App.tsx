@@ -3,15 +3,17 @@ import AppLayout from './pages/AppLayout';
 import ProductLayout from './pages/ProductLayout';
 import LoginLayout from './pages/LoginLayout';
 import RegisterLayout from './pages/RegisterLayout';
+import Error404 from './pages/Error404';
 
 function App() {
 	return (
 		<BrowserRouter>
 			<Routes>
-				<Route index element={<AppLayout />}></Route>
-				<Route path="product" element={<ProductLayout />}></Route>
-				<Route path="login" element={<LoginLayout />}></Route>
-				<Route path="register" element={<RegisterLayout />}></Route>
+				<Route index element={<AppLayout />} />
+				<Route path="product" element={<ProductLayout />} />
+				<Route path="login" element={<LoginLayout />} />
+				<Route path="register" element={<RegisterLayout />} />
+				<Route path="*" element={<Error404 />} />
 			</Routes>
 		</BrowserRouter>
 	);

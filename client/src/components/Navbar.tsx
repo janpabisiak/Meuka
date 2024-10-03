@@ -1,31 +1,33 @@
+import { Link } from 'react-router-dom';
+
 function Navbar() {
 	return (
 		<nav className="navbar">
 			<ul className="navbar__links">
 				<li>
-					<a href="http://" className="navbar__links__item active">
+					<Link to="/" className="navbar__links__item active">
 						All
-					</a>
+					</Link>
 				</li>
 				<li>
-					<a href="http://" className="navbar__links__item">
+					<Link to="women" className="navbar__links__item">
 						Women
-					</a>
+					</Link>
 				</li>
 				<li>
-					<a href="http://" className="navbar__links__item">
+					<Link to="men" className="navbar__links__item">
 						Men
-					</a>
+					</Link>
 				</li>
 				<li>
-					<a href="http://" className="navbar__links__item">
+					<Link to="children" className="navbar__links__item">
 						Children
-					</a>
+					</Link>
 				</li>
 			</ul>
-			<a href="" className="navbar__logo">
+			<Link to="/" className="navbar__logo">
 				Meuka
-			</a>
+			</Link>
 			<div className="navbar__details">
 				<div className="user">
 					<i className="las la-user user__icon"></i>

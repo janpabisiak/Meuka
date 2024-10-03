@@ -5,6 +5,10 @@ function ProductsList() {
 		<main className="main">
 			<div className="products">
 				<ProductsItem />
+				<ProductsItem />
+				<ProductsItem />
+				<ProductsItem />
+				<ProductsItem />
 			</div>
 		</main>
 	);
