@@ -1,14 +1,17 @@
 {
 	"devDependencies": {
 		"@types/cors": "^2.8.17",
+		"@types/crypto-js": "^4.2.2",
 		"@types/express": "^5.0.0",
 		"@types/node": "^22.7.4",
+		"@types/react": "^18.3.11",
+		"@types/react-dom": "^18.3.0",
+		"@types/react-router-dom": "^5.3.3",
 		"nodemon": "^3.1.7",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.6.2"
 	},
 	"dependencies": {
-		"@types/crypto-js": "^4.2.2",
 		"body-parser": "^1.20.3",
 		"cors": "^2.8.5",
 		"crypto-js": "^4.2.0",
@@ -17,7 +20,7 @@
 		"mongodb": "^6.9.0",
 		"mongoose": "^8.7.0"
 	},
-	"name": "ecommerce-backend",
+	"name": "meuka-backend",
 	"version": "1.0.0",
 	"description": "",
 	"main": "server.ts",
