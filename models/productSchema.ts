@@ -6,7 +6,9 @@ interface IProduct {
 	price: number;
 	description: string;
 	category: string;
-	image: string;
+	images: string[];
+	colors: string[];
+	sizes: number[];
 }
 
 const productSchema = new Schema<IProduct>({
@@ -26,8 +28,16 @@ const productSchema = new Schema<IProduct>({
 		type: String,
 		required: true,
 	},
-	image: {
-		type: String,
+	images: {
+		type: [String],
+		required: true,
+	},
+	colors: {
+		type: [String],
+		required: true,
+	},
+	sizes: {
+		type: [Number],
 		required: true,
 	},
 });

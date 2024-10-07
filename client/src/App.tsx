@@ -10,7 +10,7 @@ function App() {
 		<BrowserRouter>
 			<Routes>
 				<Route index element={<AppLayout />} />
-				<Route path="product" element={<ProductLayout />} />
+				<Route path="product/:id" element={<ProductLayout />} />
 				<Route path="login" element={<LoginLayout />} />
 				<Route path="register" element={<RegisterLayout />} />
 				<Route path="*" element={<Error404 />} />

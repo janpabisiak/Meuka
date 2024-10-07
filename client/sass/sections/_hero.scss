@@ -32,6 +32,12 @@
 			font-size: 7.2rem;
 			max-width: 90%;
 			color: $color-text-primary;
+
+			.span {
+				padding: 0rem 1rem;
+				background-color: $color-light;
+				border-radius: 10px;
+			}
 		}
 	}
 }

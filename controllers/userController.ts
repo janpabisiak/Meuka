@@ -36,7 +36,6 @@ const getUsers = async (req: Request, res: Response): Promise<void> => {
 			res.json({
 				status: 'success',
 				data: users,
-				length: users.length,
 			});
 		} else {
 			res.json({
