@@ -8,7 +8,7 @@ interface IProduct {
 	category: string;
 	images: string[];
 	colors: string[];
-	sizes: number[];
+	sizes: string[];
 }
 
 const productSchema = new Schema<IProduct>({
@@ -37,7 +37,7 @@ const productSchema = new Schema<IProduct>({
 		required: true,
 	},
 	sizes: {
-		type: [Number],
+		type: [String],
 		required: true,
 	},
 });

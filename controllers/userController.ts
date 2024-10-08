@@ -9,19 +9,19 @@ const getUser = async (req: Request, res: Response): Promise<void> => {
 		const user = await User.findById(id).select('-__v');
 
 		if (user) {
-			res.json({
+			res.status(200).json({
 				status: 'success',
 				data: user,
 			});
 		} else {
-			res.json({
+			res.status(404).json({
 				status: 'failed',
 				message: 'There is no user with this id.',
 			});
 		}
 	} catch (err) {
 		console.log(err);
-		res.json({
+		res.status(500).json({
 			status: 'error',
 			error: err,
 		});
@@ -33,19 +33,19 @@ const getUsers = async (req: Request, res: Response): Promise<void> => {
 		const users = await User.find().select('-__v');
 
 		if (users.length) {
-			res.json({
+			res.status(200).json({
 				status: 'success',
 				data: users,
 			});
 		} else {
-			res.json({
+			res.status(404).json({
 				status: 'failed',
 				message: 'There is no data to send.',
 			});
 		}
 	} catch (err) {
 		console.log(err);
-		res.json({
+		res.status(500).json({
 			status: 'error',
 			error: err,
 		});
@@ -59,7 +59,7 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
 		const user = await User.findOne({ $or: [{ username }, { email }] });
 
 		if (user) {
-			res.json({
+			res.status(400).json({
 				status: 'failed',
 				message: 'There is already user with entered username or e-mail address.',
 			});
@@ -77,13 +77,13 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
 		};
 
 		await User.create(newUser);
-		res.json({
+		res.status(201).json({
 			status: 'success',
 			data: newUser,
 		});
 	} catch (err) {
 		console.log(err);
-		res.json({
+		res.status(500).json({
 			status: 'error',
 			error: err,
 		});
@@ -100,7 +100,7 @@ const loginUser = async (req: Request, res: Response): Promise<void> => {
 			const passwordHash = CryptoJS.SHA256(password).toString();
 
 			if (user.password == passwordHash) {
-				res.json({
+				res.status(200).json({
 					status: 'success',
 					data: user,
 				});
@@ -108,13 +108,13 @@ const loginUser = async (req: Request, res: Response): Promise<void> => {
 			}
 		}
 
-		res.json({
+		res.status(403).json({
 			status: 'failed',
 			message: 'E-mail or password is incorrect.',
 		});
 	} catch (err) {
 		console.log(err);
-		res.json({
+		res.status(500).json({
 			status: 'error',
 			error: err,
 		});
@@ -157,18 +157,18 @@ const deleteUser = async (req: Request, res: Response): Promise<void> => {
 		const user = await User.findByIdAndDelete({ id });
 
 		if (user) {
-			res.json({
+			res.status(201).json({
 				status: 'success',
 			});
 		} else {
-			res.json({
+			res.status(404).json({
 				status: 'failed',
 				message: 'There is no user with this id.',
 			});
 		}
 	} catch (err) {
 		console.log(err);
-		res.json({
+		res.status(500).json({
 			status: 'error',
 			error: err,
 		});

@@ -5,22 +5,22 @@ const getProduct = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;
 
-		const product = await Product.findById(id);
+		const product = await Product.findById(id).select('-__v');
 
 		if (product) {
-			res.json({
+			res.status(200).json({
 				status: 'success',
 				data: product,
 			});
 		} else {
-			res.json({
+			res.status(404).json({
 				status: 'failed',
 				message: 'There is no product with this id.',
 			});
 		}
 	} catch (err) {
 		console.log(err);
-		res.json({
+		res.status(500).json({
 			status: 'error',
 			error: err,
 		});
@@ -29,22 +29,22 @@ const getProduct = async (req: Request, res: Response) => {
 
 const getProducts = async (req: Request, res: Response) => {
 	try {
-		const products = await Product.find();
+		const products = await Product.find().select('-__v');
 
 		if (products.length) {
-			res.json({
+			res.status(200).json({
 				status: 'success',
 				data: products,
 			});
 		} else {
-			res.json({
+			res.status(404).json({
 				status: 'failed',
 				message: 'There is no data to send.',
 			});
 		}
 	} catch (err) {
 		console.log(err);
-		res.json({
+		res.status(500).json({
 			status: 'error',
 			error: err,
 		});
@@ -63,7 +63,7 @@ const addProduct = async (req: Request, res: Response) => {
 		});
 	} catch (err) {
 		console.log(err);
-		res.json({
+		res.status(500).json({
 			status: 'error',
 			error: err,
 		});

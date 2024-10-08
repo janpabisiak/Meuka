@@ -2,7 +2,9 @@ import useFetch from '../hooks/useFetch';
 import ProductsItem from './ProductsItem';
 
 function ProductsList() {
-	const { data, error, isLoading } = useFetch('http://localhost:3000/api/products/', 'GET');
+	const { data, error, isLoading } = useFetch(import.meta.env.VITE_API_LINK + '/products', 'GET');
+
+	console.log(data);
 
 	if (isLoading) {
 		return <h1>Loading...</h1>;
@@ -17,7 +19,7 @@ function ProductsList() {
 			<main className="main">
 				<div className="products">
 					{data.data.map((product) => (
-						<ProductsItem key={product.id} product={product} />
+						<ProductsItem key={product._id} product={product} />
 					))}
 				</div>
 			</main>

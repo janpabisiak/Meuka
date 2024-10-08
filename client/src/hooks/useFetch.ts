@@ -1,4 +1,8 @@
 import { useEffect, useState } from 'react';
+import axios from 'axios';
+
+const instance = axios.create();
+instance.defaults.timeout = 8000;
 
 type method = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
@@ -9,31 +13,33 @@ function useFetch(url: string, method: method, body?: object) {
 
 	useEffect(() => {
 		async function fetchData() {
+			const controller = new AbortController();
+
 			try {
 				setIsLoading(true);
 				let response;
 				if (method === 'GET') {
-					response = await fetch(url);
+					response = await instance({
+						method: 'get',
+						url,
+						signal: controller.signal,
+					});
 				} else {
-					response = await fetch(url, {
-						method: method.toUpperCase(),
-						body: JSON.stringify(body),
-						headers: { 'Content-Type': 'application/json' },
+					response = await instance({
+						method,
+						url,
+						data: body,
+						signal: controller.signal,
 					});
 				}
-
-				if (!response.ok) {
-					throw new Error('HTTP error! Status: ' + response.status);
-				}
-
-				const data = await response.json();
-				setData(data);
+				setData(response.data);
 			} catch (err: unknown) {
 				if (err instanceof Error) {
 					setError(err);
 				}
 			} finally {
 				setIsLoading(false);
+				controller.abort();
 			}
 		}
 
