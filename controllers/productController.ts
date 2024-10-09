@@ -29,7 +29,14 @@ const getProduct = async (req: Request, res: Response) => {
 
 const getProducts = async (req: Request, res: Response) => {
 	try {
-		const products = await Product.find().select('-__v');
+		const { category = null } = req.query;
+		let products;
+
+		if (category) {
+			products = await Product.find().where({ category }).select('-__v');
+		} else {
+			products = await Product.find().select('-__v');
+		}
 
 		if (products.length) {
 			res.status(200).json({

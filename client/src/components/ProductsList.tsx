@@ -1,24 +1,25 @@
-import useFetch from '../hooks/useFetch';
+import { useParams } from 'react-router-dom';
+import { useProduct } from '../contexts/productContext';
 import ProductsItem from './ProductsItem';
+import { useEffect, useState } from 'react';
 
 function ProductsList() {
-	const { data, error, isLoading } = useFetch(import.meta.env.VITE_API_LINK + '/products', 'GET');
+	const { category } = useParams();
+	const { products } = useProduct();
 
-	console.log(data);
+	// if (isLoading) {
+	// 	return <h1>Loading...</h1>;
+	// }
 
-	if (isLoading) {
-		return <h1>Loading...</h1>;
-	}
+	// if (error) {
+	// 	return <h1>Error: {error.message}</h1>;
+	// }
 
-	if (error) {
-		return <h1>Error: {error.message}</h1>;
-	}
-
-	if (data && data.data) {
+	if (products) {
 		return (
 			<main className="main">
 				<div className="products">
-					{data.data.map((product) => (
+					{products.map((product) => (
 						<ProductsItem key={product._id} product={product} />
 					))}
 				</div>

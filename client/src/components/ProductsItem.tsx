@@ -15,7 +15,7 @@ function ProductsItem({ product }: Props) {
 	const productLink = `product/` + product._id;
 
 	return (
-		<Link to={productLink}>
+		<Link to={`../${productLink}`}>
 			<div className="products__item">
 				<div className="products__item__image">
 					<img className="default-image" src={product.images[0]} />

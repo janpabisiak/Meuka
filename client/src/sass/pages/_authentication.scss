@@ -1,22 +1,35 @@
 .auth {
 	position: relative;
-	min-height: 90vh;
-	background: url('../../images/blob.svg');
-	background-size: 100%;
-	background-position: center;
+	min-height: 100vh;
+	background: url('../polygon.svg');
+	background-size: cover;
 
 	&__form {
 		display: flex;
 		flex-direction: column;
 		position: absolute;
-		min-width: 40rem;
+		max-width: 50rem;
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
 		background-color: $color-light;
+		border: 3px solid $color-text-primary;
 		padding: 3rem;
-		border-radius: 10px;
 		gap: 1rem;
+		box-shadow: 10px 10px 0 $color-text-primary;
+
+		.auth__errors {
+			background-color: brown;
+			padding: 1rem;
+			border-radius: 3px;
+			list-style: none;
+			max-width: 50rem;
+
+			&__item {
+				font-size: 1.4rem;
+				color: $color-light;
+			}
+		}
 
 		.auth__title {
 			color: $color-text-primary;
@@ -26,8 +39,9 @@
 		}
 
 		.auth__siblings {
-			display: flex;
-			gap: 2rem;
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			column-gap: 1rem;
 		}
 
 		.auth__btns {

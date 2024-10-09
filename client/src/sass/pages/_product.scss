@@ -4,14 +4,16 @@
 	justify-content: center;
 	column-gap: 10rem;
 	padding: 6rem 20rem;
+	background: url('../polygon.svg');
+	background-size: cover;
 
 	&__image {
 		height: 100%;
+		background-color: $color-light;
 
 		& * {
 			--x: 50%;
 			--y: 50%;
-			height: 100%;
 			width: 100%;
 			transform: scale(var(--zoom));
 			transform-origin: var(--x) var(--y);
@@ -19,6 +21,7 @@
 				calc((1 - 1 / var(--zoom)) * (var(--y))) calc((1 - 1 / var(--zoom)) * (100% - var(--x)))
 					calc((1 - 1 / var(--zoom)) * (100% - var(--y))) calc((1 - 1 / var(--zoom)) * (var(--x)))
 			);
+			object-fit: cover;
 		}
 
 		&:hover {
@@ -35,9 +38,9 @@
 		max-width: 80%;
 
 		.product__title {
-			font-size: 3.6rem;
+			font-size: 4.2rem;
 			color: $color-text-primary;
-			margin-bottom: -2rem;
+			border-bottom: 3px solid $color-text-primary;
 		}
 
 		.product__price {
@@ -62,10 +65,8 @@
 				background-color: rgb(218, 218, 218);
 				border-radius: 50%;
 				cursor: pointer;
-
-				&:hover {
-					border: 2px solid #bbb;
-				}
+				border: 2px solid #bbb;
+				transition: border 0.3s;
 
 				&.active {
 					border: 2px solid black;
@@ -80,20 +81,53 @@
 
 			&__item {
 				display: block;
+				height: 5rem;
+				width: 6.5rem;
 				padding: 1rem 2rem;
 				font-size: 1.6rem;
 				border: 2px solid #bbb;
+				background-color: #fff;
 				cursor: pointer;
+				position: relative;
+				user-select: none;
+
+				&::before {
+					content: '';
+					position: absolute;
+					top: 0;
+					left: 0;
+					width: 0;
+					height: 0;
+					background-color: $color-text-primary;
+					z-index: 1;
+					transition: width 0.3s ease, height 0.3s ease;
+					transform-origin: bottom right;
+				}
 
 				&:hover {
 					border: 2px solid black;
 					color: $color-text-primary;
 				}
 
+				& span {
+					position: absolute;
+					top: 50%;
+					left: 50%;
+					transform: translate(-50%, -50%);
+				}
+
 				&.active {
-					background-color: $color-text-primary;
 					color: #fff;
 					border: 2px solid $color-text-primary;
+
+					&::before {
+						width: 100%;
+						height: 100%;
+					}
+
+					& span {
+						z-index: 2;
+					}
 				}
 			}
 		}

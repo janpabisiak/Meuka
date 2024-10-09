@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const instance = axios.create();
-instance.defaults.timeout = 8000;
+instance.defaults.timeout = import.meta.env.VITE_API_TIMEOUT;
 
 type method = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
@@ -46,7 +46,7 @@ function useFetch(url: string, method: method, body?: object) {
 		fetchData();
 	}, [url, body, method]);
 
-	return { data, error, isLoading };
+	return [data, error, isLoading];
 }
 
 export default useFetch;

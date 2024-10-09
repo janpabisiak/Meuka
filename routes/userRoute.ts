@@ -1,13 +1,13 @@
 import express, { Router } from 'express';
 import * as userController from '../controllers/userController';
+import * as userValidator from '../validators/userValidator';
 
 const router: Router = express.Router();
 
-router.get('/:id', userController.getUser);
-router.get('/', userController.getUsers);
+router.get('/', userController.getUser);
 
-router.post('/register', userController.createUser);
-router.post('/login', userController.loginUser);
+router.post('/register', userValidator.register, userController.createUser);
+router.post('/login', userValidator.login, userController.loginUser);
 
 // router.patch('/:id', userController.updateUser);
 

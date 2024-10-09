@@ -3,6 +3,7 @@
 		"@types/cors": "^2.8.17",
 		"@types/crypto-js": "^4.2.2",
 		"@types/express": "^5.0.0",
+		"@types/jsonwebtoken": "^9.0.7",
 		"@types/node": "^22.7.4",
 		"@types/react": "^18.3.11",
 		"@types/react-dom": "^18.3.0",
@@ -17,6 +18,8 @@
 		"crypto-js": "^4.2.0",
 		"dotenv": "^16.4.5",
 		"express": "^4.21.0",
+		"express-validator": "^7.2.0",
+		"jsonwebtoken": "^9.0.2",
 		"mongodb": "^6.9.0",
 		"mongoose": "^8.7.0"
 	},

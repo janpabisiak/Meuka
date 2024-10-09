@@ -1,86 +1,96 @@
+import 'dotenv/config';
 import { Request, Response } from 'express';
 import CryptoJS from 'crypto-js';
+import jwt from 'jsonwebtoken';
 import User from '../models/userSchema';
+import { validationResult } from 'express-validator';
+
+interface TokenPayload {
+	username: string;
+	iat: number;
+	exp: number;
+}
 
 const getUser = async (req: Request, res: Response): Promise<void> => {
 	try {
-		const { id } = req.params;
+		const token = req.headers['authorization']?.split(' ')[1];
+		if (token) {
+			const { username } = jwt.verify(token, process.env.JWT_SECRET_KEY!) as TokenPayload;
 
-		const user = await User.findById(id).select('-__v');
+			const user = await User.findOne({ username }).select('-__v -password');
 
-		if (user) {
-			res.status(200).json({
-				status: 'success',
-				data: user,
-			});
+			if (user) {
+				res.status(200).json({
+					status: 'success',
+					data: user,
+				});
+			} else {
+				res.status(404).json({
+					status: 'failed',
+					message: 'There is no user with this id.',
+				});
+			}
 		} else {
-			res.status(404).json({
+			res.status(403).json({
 				status: 'failed',
-				message: 'There is no user with this id.',
+				message: 'Unauthorized operation.',
 			});
 		}
 	} catch (err) {
 		console.log(err);
 		res.status(500).json({
 			status: 'error',
-			error: err,
-		});
-	}
-};
-
-const getUsers = async (req: Request, res: Response): Promise<void> => {
-	try {
-		const users = await User.find().select('-__v');
-
-		if (users.length) {
-			res.status(200).json({
-				status: 'success',
-				data: users,
-			});
-		} else {
-			res.status(404).json({
-				status: 'failed',
-				message: 'There is no data to send.',
-			});
-		}
-	} catch (err) {
-		console.log(err);
-		res.status(500).json({
-			status: 'error',
-			error: err,
+			error: (err as Error).message,
 		});
 	}
 };
 
 const createUser = async (req: Request, res: Response): Promise<void> => {
 	try {
-		const { username, email, password, firstName, lastName } = req.body;
-
-		const user = await User.findOne({ $or: [{ username }, { email }] });
-
-		if (user) {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
 			res.status(400).json({
 				status: 'failed',
-				message: 'There is already user with entered username or e-mail address.',
+				errors: errors.array(),
 			});
-			return;
+		} else {
+			const { username, email, password, firstName, lastName } = req.body;
+			const user = await User.findOne({ $or: [{ username }, { email }] });
+
+			if (user) {
+				res.status(400).json({
+					status: 'failed',
+					message: 'There is already user with entered username or e-mail address.',
+				});
+				return;
+			}
+
+			const passwordHash = CryptoJS.SHA256(password).toString();
+
+			const newUser = {
+				username,
+				email,
+				password: passwordHash,
+				firstName,
+				lastName,
+			};
+
+			await User.create(newUser);
+
+			const token = jwt.sign(
+				{
+					username: newUser.username,
+				},
+				process.env.JWT_SECRET_KEY!,
+				{ expiresIn: '7d' }
+			);
+
+			res.status(201).json({
+				status: 'success',
+				data: newUser,
+				token,
+			});
 		}
-
-		const passwordHash = CryptoJS.SHA256(password).toString();
-
-		const newUser = {
-			username,
-			email,
-			password: passwordHash,
-			firstName,
-			lastName,
-		};
-
-		await User.create(newUser);
-		res.status(201).json({
-			status: 'success',
-			data: newUser,
-		});
 	} catch (err) {
 		console.log(err);
 		res.status(500).json({
@@ -92,26 +102,43 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
 
 const loginUser = async (req: Request, res: Response): Promise<void> => {
 	try {
-		const { email, password } = req.body;
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			res.status(400).json({
+				status: 'failed',
+				errors: errors.array(),
+			});
+		} else {
+			const { email, password } = req.body;
 
-		const user = await User.findOne({ email: email });
+			const user = await User.findOne({ email });
 
-		if (user) {
-			const passwordHash = CryptoJS.SHA256(password).toString();
+			if (user) {
+				const passwordHash = CryptoJS.SHA256(password).toString();
 
-			if (user.password == passwordHash) {
-				res.status(200).json({
-					status: 'success',
-					data: user,
-				});
-				return;
+				if (user.password == passwordHash) {
+					const token = jwt.sign(
+						{
+							username: user.username,
+						},
+						process.env.JWT_SECRET_KEY!,
+						{ expiresIn: '7d' }
+					);
+
+					res.status(200).json({
+						status: 'success',
+						data: user,
+						token,
+					});
+					return;
+				}
 			}
-		}
 
-		res.status(403).json({
-			status: 'failed',
-			message: 'E-mail or password is incorrect.',
-		});
+			res.status(403).json({
+				status: 'failed',
+				message: 'E-mail or password is incorrect.',
+			});
+		}
 	} catch (err) {
 		console.log(err);
 		res.status(500).json({
@@ -175,4 +202,4 @@ const deleteUser = async (req: Request, res: Response): Promise<void> => {
 	}
 };
 
-export { getUser, getUsers, createUser, loginUser, deleteUser };
+export { getUser, createUser, loginUser, deleteUser };

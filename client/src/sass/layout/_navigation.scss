@@ -1,6 +1,7 @@
 .navbar {
-	display: flex;
-	justify-content: space-between;
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	justify-items: center;
 	align-items: center;
 	padding: 1rem 10rem;
 	min-height: 10vh;
@@ -27,6 +28,7 @@
 			text-decoration: none;
 			color: $color-text-primary;
 			font-size: 1.6rem;
+			text-transform: capitalize;
 
 			&.active {
 				background-color: $color-text-primary;
@@ -64,26 +66,60 @@
 		.user {
 			display: flex;
 			align-items: center;
-			gap: 0.5rem;
-			cursor: pointer;
 			position: relative;
+			user-select: none;
 
-			&__icon {
-				font-size: 2.4rem;
-			}
+			&__details {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				position: relative;
+				cursor: pointer;
+				color: $color-text-secondary;
+				transition: 0.3s;
 
-			&__name {
-				font-size: 1.6rem;
+				&:hover {
+					color: $color-text-primary;
+				}
+
+				&.active {
+					color: $color-text-primary;
+				}
+
+				&__icon {
+					font-size: 2.4rem;
+				}
+
+				&__name {
+					font-size: 1.6rem;
+				}
 			}
 
 			&__options {
 				position: absolute;
 				left: 0;
 				top: 100%;
-				height: 100%;
 				width: 10rem;
 				background-color: $color-light;
 				border-radius: 10px;
+				display: flex;
+				flex-direction: column;
+				padding: 1rem;
+				gap: 0.5rem;
+				cursor: pointer;
+				z-index: 5;
+
+				&__item {
+					display: block;
+					font-size: 1.4rem;
+					text-align: center;
+					color: $color-text-secondary;
+					cursor: pointer;
+
+					&:hover {
+						color: $color-text-primary;
+					}
+				}
 			}
 		}
 
@@ -93,8 +129,15 @@
 			gap: 0.5rem;
 			cursor: pointer;
 			padding: 0.5rem 1rem;
-			background-color: #ececec;
+			border: 2px solid $color-light;
 			border-radius: 10px;
+			transition: 0.3s border, 0.3s color;
+			color: $color-text-secondary;
+
+			&:hover {
+				border: 2px solid $color-text-primary;
+				color: $color-text-primary;
+			}
 
 			&__icon {
 				font-size: 2.4rem;
