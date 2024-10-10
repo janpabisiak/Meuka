@@ -1,17 +1,28 @@
 import { createContext, ReactNode, useContext, useReducer, Dispatch, useEffect } from 'react';
 import axios from 'axios';
 
+interface ISelectedProduct {
+	_id: string;
+	selectedColor: string;
+	selectedSize: string;
+}
+
 interface IState {
 	_id: string;
 	username: string;
 	email: string;
 	firstName: string;
 	lastName: string;
+	cart: ISelectedProduct[];
+	cartLength: number;
+	favorites: ISelectedProduct[];
+	selectedColor?: string;
+	selectedSize?: string;
 	isAuthenticated: boolean;
 }
 
 interface IAction {
-	type: 'user/set' | 'user/logout';
+	type: 'user/set' | 'user/logout' | 'cart/add' | 'cart/delete' | 'cart/edit' | 'favorites/add' | 'favorites/delete' | 'favorites/edit';
 	payload?: Partial<IState>;
 }
 
@@ -21,6 +32,9 @@ const initialState: IState = {
 	email: '',
 	firstName: '',
 	lastName: '',
+	cart: [],
+	cartLength: 0,
+	favorites: [],
 	isAuthenticated: false,
 };
 
@@ -34,6 +48,48 @@ function reducer(state: IState, action: IAction): IState {
 			};
 		case 'user/logout':
 			return initialState;
+		case 'cart/add':
+			return {
+				...state,
+				cart: [...state.cart, action.payload as ISelectedProduct],
+				cartLength: state.cartLength + 1,
+			};
+		case 'cart/delete':
+			return {
+				...state,
+				cart: [...state.cart].filter((product) => product._id !== action.payload),
+				cartLength: state.cartLength - 1,
+			};
+		case 'cart/edit':
+			return {
+				...state,
+				cart: [...state.cart].map((product) => {
+					if (product._id === action.payload?._id) {
+						return { ...product, selectedColor: action.payload!.selectedColor, selectedSize: action.payload!.selectedSize };
+					}
+					return product;
+				}),
+			};
+		case 'favorites/add':
+			return {
+				...state,
+				favorites: [...state.favorites, action.payload as ISelectedProduct],
+			};
+		case 'favorites/delete':
+			return {
+				...state,
+				favorites: [...state.favorites].filter((product) => product._id !== action.payload),
+			};
+		case 'favorites/edit':
+			return {
+				...state,
+				favorites: [...state.favorites].map((product) => {
+					if (product._id === action.payload?._id) {
+						return { ...product, selectedColor: action.payload!.selectedColor, selectedSize: action.payload!.selectedSize };
+					}
+					return product;
+				}),
+			};
 		default:
 			return state;
 	}
@@ -54,14 +110,18 @@ function UserProvider({ children }: { children: ReactNode }) {
 	useEffect(() => {
 		async function fetchUserData() {
 			if (localStorage.getItem('token')) {
-				const response = await axios({
-					url: import.meta.env.VITE_API_LINK + '/users',
-					method: 'get',
-					headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-					timeout: import.meta.env.VITE_API_TIMEOUT,
-				});
+				try {
+					const response = await axios({
+						url: import.meta.env.VITE_API_LINK + '/users',
+						method: 'get',
+						headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+						timeout: import.meta.env.VITE_API_TIMEOUT,
+					});
 
-				dispatch({ type: 'user/set', payload: response.data.data });
+					dispatch({ type: 'user/set', payload: response.data.data });
+				} catch (err) {
+					console.error('Error fetching user data:', err);
+				}
 			}
 		}
 

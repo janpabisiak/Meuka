@@ -16,15 +16,7 @@ const register = [
 		.withMessage('Please provide a valid e-mail address.')
 		.trim(),
 
-	body('password')
-		.isStrongPassword({
-			minLength: 10,
-			minUppercase: 2,
-			minNumbers: 2,
-			minSymbols: 0,
-		})
-		.withMessage('Password must be at least 10 characters long, contain at least 2 uppercase letters, and 2 numbers.')
-		.trim(),
+	body('password').isLength({ min: 8, max: 255 }).withMessage('Password must be at least 8 characters long.').trim(),
 
 	body('firstName')
 		.notEmpty()

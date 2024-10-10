@@ -7,13 +7,20 @@ import ProductContent from './ProductContent';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useProduct } from '../contexts/productContext';
+import { useUser } from '../contexts/userContext';
 
 function Product() {
 	const [selectedColor, setSelectedColor] = useState<string>('');
 	const [selectedSize, setSelectedSize] = useState<string>('');
 	const { id: productID } = useParams();
 	const { products } = useProduct();
+	const {
+		state: { cart },
+		dispatch,
+	} = useUser();
 	const product = products.find((product) => product._id === productID);
+
+	console.log(cart);
 
 	useEffect(() => {
 		if (product) {
@@ -30,6 +37,10 @@ function Product() {
 		setSelectedSize(size);
 	}
 
+	function handleAddToCart() {
+		dispatch({ type: 'cart/add', payload: { id: productID, selectedColor, selectedSize } });
+	}
+
 	return (
 		<main className="product">
 			{/* {isLoading && <h1>Loading...</h1>}
@@ -43,7 +54,7 @@ function Product() {
 							<ColorsList colors={product.colors} selectedColor={selectedColor} onColorChange={handleColorChange} />
 						)}
 						{product.sizes && <SizesList sizes={product.sizes} selectedSize={selectedSize} onSizeChange={handleSizeChange} />}
-						<ProductButtons />
+						<ProductButtons onAddToCart={handleAddToCart} />
 					</ProductDetails>
 				</>
 			) : (

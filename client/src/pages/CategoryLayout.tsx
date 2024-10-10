@@ -7,7 +7,6 @@ import Logo from '../components/Logo';
 import NavbarDetails from '../components/NavbarDetails';
 import NavbarCart from '../components/NavbarCart';
 import NavbarUser from '../components/NavbarUser';
-import CategoryTitle from '../components/CategoryTitle';
 
 function CategoryLayout() {
 	return (

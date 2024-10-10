@@ -1,17 +1,17 @@
 .auth {
-	position: relative;
-	min-height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
 	background: url('../polygon.svg');
 	background-size: cover;
 
 	&__form {
 		display: flex;
 		flex-direction: column;
-		position: absolute;
-		max-width: 50rem;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
+		min-width: 40rem;
+		max-width: 90vw;
+		max-height: 100%;
 		background-color: $color-light;
 		border: 3px solid $color-text-primary;
 		padding: 3rem;
@@ -23,7 +23,6 @@
 			padding: 1rem;
 			border-radius: 3px;
 			list-style: none;
-			max-width: 50rem;
 
 			&__item {
 				font-size: 1.4rem;
@@ -35,7 +34,6 @@
 			color: $color-text-primary;
 			font-size: 3.2rem;
 			text-align: center;
-			margin-bottom: 2rem;
 		}
 
 		.auth__siblings {
@@ -49,6 +47,10 @@
 			grid-template-columns: 1fr 1fr;
 			gap: 2rem;
 			margin-top: 2rem;
+
+			& .btn__secondary {
+				width: 100%;
+			}
 		}
 	}
 }

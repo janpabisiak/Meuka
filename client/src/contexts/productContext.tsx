@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { createContext, Dispatch, ReactNode, useContext, useEffect, useReducer } from 'react';
 
-// Define a Product interface for each product in the array
 interface IProduct {
 	_id: string;
 	title: string;
@@ -13,18 +12,15 @@ interface IProduct {
 	sizes: string[];
 }
 
-// The state now holds an array of products
 interface IState {
 	products: IProduct[];
 }
 
-// Action now handles setting an array of products
 interface IAction {
 	type: 'products/set';
 	payload: IProduct[];
 }
 
-// Initial state with an empty array of products
 const initialState: IState = {
 	products: [],
 };
@@ -38,7 +34,6 @@ function reducer(state: IState, action: IAction) {
 	}
 }
 
-// ProductContext now holds an array of products in the state
 const ProductContext = createContext<{ state: IState; dispatch: Dispatch<IAction> } | undefined>(undefined);
 
 function ProductProvider({ children }: { children: ReactNode }) {
