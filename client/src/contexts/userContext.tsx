@@ -3,8 +3,8 @@ import axios from 'axios';
 
 interface ISelectedProduct {
 	_id: string;
-	selectedColor: string;
-	selectedSize: string;
+	color: string;
+	size: string;
 }
 
 interface IState {
@@ -16,8 +16,8 @@ interface IState {
 	cart: ISelectedProduct[];
 	cartLength: number;
 	favorites: ISelectedProduct[];
-	selectedColor?: string;
-	selectedSize?: string;
+	color?: string;
+	size?: string;
 	isAuthenticated: boolean;
 }
 
@@ -65,7 +65,7 @@ function reducer(state: IState, action: IAction): IState {
 				...state,
 				cart: [...state.cart].map((product) => {
 					if (product._id === action.payload?._id) {
-						return { ...product, selectedColor: action.payload!.selectedColor, selectedSize: action.payload!.selectedSize };
+						return { ...product, color: action.payload!.color, size: action.payload!.size };
 					}
 					return product;
 				}),
@@ -85,7 +85,7 @@ function reducer(state: IState, action: IAction): IState {
 				...state,
 				favorites: [...state.favorites].map((product) => {
 					if (product._id === action.payload?._id) {
-						return { ...product, selectedColor: action.payload!.selectedColor, selectedSize: action.payload!.selectedSize };
+						return { ...product, color: action.payload!.color, size: action.payload!.size };
 					}
 					return product;
 				}),
