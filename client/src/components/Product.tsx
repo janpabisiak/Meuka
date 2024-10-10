@@ -37,8 +37,8 @@ function Product() {
 		setSelectedSize(size);
 	}
 
-	function handleAddToCart() {
-		dispatch({ type: 'cart/add', payload: { id: productID, selectedColor, selectedSize } });
+	function handleAdd(where: 'cart' | 'favorites') {
+		dispatch({ type: `${where}/add`, payload: { _id: productID, selectedColor, selectedSize } });
 	}
 
 	return (
@@ -54,7 +54,7 @@ function Product() {
 							<ColorsList colors={product.colors} selectedColor={selectedColor} onColorChange={handleColorChange} />
 						)}
 						{product.sizes && <SizesList sizes={product.sizes} selectedSize={selectedSize} onSizeChange={handleSizeChange} />}
-						<ProductButtons onAddToCart={handleAddToCart} />
+						<ProductButtons onAdd={handleAdd} />
 					</ProductDetails>
 				</>
 			) : (
