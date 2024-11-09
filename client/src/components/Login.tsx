@@ -1,65 +1,74 @@
-import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useForm } from 'react-hook-form';
 import { useUser } from '../contexts/userContext';
 import { Link } from 'react-router-dom';
 
 function Login() {
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
-	const [errors, setErrors] = useState<string[] | string | undefined>();
+	const {
+		register,
+		formState: { errors },
+		handleSubmit,
+	} = useForm();
 	const navigate = useNavigate();
 	const { dispatch } = useUser();
 
-	async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+	async function onSubmit(data) {
 		try {
-			e.preventDefault();
 			const response = await axios.post('http://localhost:3000/api/users/login', {
-				email,
-				password,
+				email: data.email,
+				password: data.password,
 			});
 			localStorage.setItem('token', response.data.token);
 			dispatch({ type: 'user/set', payload: response.data.data });
 			navigate('../');
 		} catch (err) {
-			const errorMessages = [];
-
-			if (err.response?.data?.errors) {
-				err.response.data.errors.forEach((error: any) => {
-					errorMessages.push(error.msg);
-				});
-			} else if (err.response?.data?.error) {
-				errorMessages.push(err.response.data.error);
-			} else {
-				errorMessages.push('An unexpected error occurred. Please try again.');
-			}
-
-			setErrors(errorMessages);
+			// TODO: ADD ERRORS FROM SERVER
+			console.log(err);
 		}
 	}
 
 	return (
 		<main className="auth">
-			<form className="auth__form" onSubmit={(e) => handleSubmit(e)}>
+			<div className="auth__video">
+				<video autoPlay muted loop>
+					<source src="./auth-video.webm" type="video/webm" />
+				</video>
+			</div>
+			<form className="auth__form" onSubmit={handleSubmit(onSubmit)}>
 				<h2 className="auth__title">Log in</h2>
-				{errors && (
+				{Object.keys(errors).length > 0 && (
 					<ul className="auth__errors">
-						{errors.map((error, i) => {
+						{Object.keys(errors).map((key, i) => {
 							return (
 								<li className="auth__errors__item" key={i}>
-									{error}
+									{errors[key].message}
 								</li>
 							);
 						})}
 					</ul>
 				)}
-				<input className="input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="E-mail" />
+				<input
+					className="input"
+					type="email"
+					placeholder="E-mail"
+					aria-invalid={errors.email}
+					{...register('email', {
+						required: 'Email address is required',
+						validate: (input) => {
+							const pattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+							return pattern.test(input) || 'Invalid email format';
+						},
+					})}
+				/>
 				<input
 					className="input"
 					type="password"
-					value={password}
-					onChange={(e) => setPassword(e.target.value)}
 					placeholder="Password"
+					aria-invalid={errors.password}
+					{...register('password', {
+						required: 'Password is required',
+					})}
 				/>
 				<div className="auth__btns">
 					<input type="submit" className="btn btn__primary" value="Log in" />

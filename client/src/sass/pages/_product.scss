@@ -44,13 +44,14 @@
 		}
 
 		.product__price {
-			font-size: 2.4rem;
+			font-size: 3.2rem;
 			font-weight: 600;
 			color: $color-text-primary;
 		}
 
 		.product__description {
-			font-size: 1.6rem;
+			font-size: 1.8rem;
+			max-width: 50rem;
 		}
 
 		.product__colors {
@@ -84,7 +85,7 @@
 				height: 5rem;
 				width: 6.5rem;
 				padding: 1rem 2rem;
-				font-size: 1.6rem;
+				font-size: 1.8rem;
 				border: 2px solid #bbb;
 				background-color: #fff;
 				cursor: pointer;
@@ -135,6 +136,39 @@
 		.product__buttons {
 			display: flex;
 			gap: 2rem;
+		}
+	}
+
+	&__delivery__info {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		padding: 4rem;
+		background-color: $color-light;
+		border-radius: 10px;
+		margin-top: 6rem;
+		gap: 1rem;
+		grid-column: 1 / -1;
+
+		&__icon {
+			position: absolute;
+			top: -30px;
+			left: 95%;
+			font-size: 4.8rem;
+			padding: 2rem;
+			background-color: $color-text-primary;
+			border-radius: 20px;
+			transform: rotate(15deg);
+			color: $color-light;
+		}
+
+		&__title {
+			font-size: 2.6rem;
+			color: $color-text-primary;
+		}
+
+		&__description {
+			font-size: 1.8rem;
 		}
 	}
 }

@@ -2,9 +2,7 @@ import { Link } from 'react-router-dom';
 import { useUser } from '../contexts/userContext';
 
 function NavbarCart() {
-	const {
-		state: { cartLength },
-	} = useUser();
+	const { cartLength } = useUser();
 
 	return (
 		<Link to="../cart">

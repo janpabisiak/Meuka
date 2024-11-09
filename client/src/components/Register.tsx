@@ -1,32 +1,29 @@
 import axios from 'axios';
-import { FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../contexts/userContext';
+import { useForm } from 'react-hook-form';
 
 function Register() {
-	const [firstName, setFirstName] = useState('');
-	const [lastName, setLastName] = useState('');
-	const [username, setUsername] = useState('');
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
-	const [confirmPassword, setConfirmPassword] = useState('');
-	const [errors, setErrors] = useState<string[] | string | undefined>();
+	const {
+		register,
+		formState: { errors },
+		handleSubmit,
+	} = useForm();
 	const navigate = useNavigate();
 	const { dispatch } = useUser();
 
-	async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+	async function onSubmit(data) {
 		try {
-			e.preventDefault();
-			if (password !== confirmPassword) {
+			if (data.password !== data.confirmPassword) {
 				return;
 			}
 
 			const response = await axios.post('http://localhost:3000/api/users/register', {
-				username,
-				email,
-				password,
-				firstName,
-				lastName,
+				username: data.username,
+				email: data.email,
+				password: data.password,
+				firstName: data.firstName,
+				lastName: data.lastName,
 			});
 
 			localStorage.setItem('token', `Bearer ${response.data.token}`);
@@ -53,14 +50,19 @@ function Register() {
 
 	return (
 		<main className="auth">
-			<form className="auth__form" onSubmit={(e) => handleSubmit(e)}>
+			<div className="auth__video">
+				<video autoPlay muted loop>
+					<source src="./auth-video.webm" type="video/webm" />
+				</video>
+			</div>
+			<form className="auth__form" onSubmit={handleSubmit(onSubmit)}>
 				<h2 className="auth__title">Create an account</h2>
-				{errors && (
+				{Object.keys(errors).length > 0 && (
 					<ul className="auth__errors">
-						{errors.map((error, i) => {
+						{Object.keys(errors).map((key, i) => {
 							return (
 								<li className="auth__errors__item" key={i}>
-									{error}
+									{errors[key].message}
 								</li>
 							);
 						})}
@@ -70,40 +72,46 @@ function Register() {
 					<input
 						className="input"
 						type="text"
-						value={firstName}
-						onChange={(e) => setFirstName(e.target.value)}
 						placeholder="First name"
+						{...(register('firstName'), { required: 'First name is required' })}
 					/>
 					<input
 						className="input"
 						type="text"
-						value={lastName}
-						onChange={(e) => setLastName(e.target.value)}
 						placeholder="Last name"
+						{...register('lastName', { required: 'Last name is required' })}
 					/>
 				</div>
 				<input
 					className="input"
 					type="text"
-					value={username}
-					onChange={(e) => setUsername(e.target.value)}
 					placeholder="Username"
+					{...register('username', { required: 'Username is required' })}
 				/>
-				<input className="input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="E-mail" />
+				<input
+					className="input"
+					type="email"
+					placeholder="E-mail"
+					{...register('email', {
+						required: 'Email address is required',
+						validate: (input) => {
+							const pattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+							return pattern.test(input) || 'Invalid email format';
+						},
+					})}
+				/>
 				<div className="auth__siblings">
 					<input
 						className="input"
 						type="password"
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
 						placeholder="Password"
+						{...register('password', { required: 'Password is required' })}
 					/>
 					<input
 						className="input"
 						type="password"
-						value={confirmPassword}
-						onChange={(e) => setConfirmPassword(e.target.value)}
 						placeholder="Confirm password"
+						{...register('confirmPassword', { required: 'Confirm password is required' })}
 					/>
 				</div>
 

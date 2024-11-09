@@ -1,19 +1,27 @@
 .auth {
-	display: flex;
-	justify-content: center;
-	align-items: center;
+	display: grid;
+	grid-template-columns: 1fr 50rem;
 	height: 100vh;
-	background: url('../polygon.svg');
-	background-size: cover;
+
+	&__video {
+		position: relative;
+		overflow: hidden;
+
+		& video {
+			position: absolute;
+			object-fit: fill;
+			left: -20%;
+		}
+	}
 
 	&__form {
 		display: flex;
 		flex-direction: column;
+		justify-content: center;
 		min-width: 40rem;
 		max-width: 90vw;
 		max-height: 100%;
 		background-color: $color-light;
-		border: 3px solid $color-text-primary;
 		padding: 3rem;
 		gap: 1rem;
 		box-shadow: 10px 10px 0 $color-text-primary;
@@ -34,6 +42,7 @@
 			color: $color-text-primary;
 			font-size: 3.2rem;
 			text-align: center;
+			margin-bottom: 2rem;
 		}
 
 		.auth__siblings {

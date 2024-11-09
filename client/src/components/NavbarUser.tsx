@@ -4,10 +4,7 @@ import { useUser } from '../contexts/userContext';
 
 function NavbarUser() {
 	const [isOpen, setIsOpen] = useState(false);
-	const {
-		state: { firstName, isAuthenticated },
-		handleLogout,
-	} = useUser();
+	const { firstName, isAuthenticated, handleLogout } = useUser();
 
 	if (!isAuthenticated) {
 		return (
@@ -35,9 +32,6 @@ function NavbarUser() {
 					<ul className="user__options">
 						<Link to="../my-orders">
 							<li className="user__options__item">My orders</li>
-						</Link>
-						<Link to="../favorites">
-							<li className="user__options__item">Favorites</li>
 						</Link>
 						<Link to="../settings">
 							<li className="user__options__item">Settings</li>

@@ -1,5 +1,6 @@
 import { createContext, ReactNode, useContext, useReducer, Dispatch, useEffect } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 interface ISelectedProduct {
 	_id: string;
@@ -22,7 +23,7 @@ interface IState {
 }
 
 interface IAction {
-	type: 'user/set' | 'user/logout' | 'cart/add' | 'cart/delete' | 'cart/edit' | 'favorites/add' | 'favorites/delete' | 'favorites/edit';
+	type: 'user/set' | 'user/logout' | 'cart/sync' | 'cart/add' | 'cart/delete';
 	payload?: Partial<IState>;
 }
 
@@ -48,6 +49,12 @@ function reducer(state: IState, action: IAction): IState {
 			};
 		case 'user/logout':
 			return initialState;
+		case 'cart/sync':
+			return {
+				...state,
+				cart: action.payload as ISelectedProduct[],
+				cartLength: action.payload!.length,
+			};
 		case 'cart/add':
 			return {
 				...state,
@@ -57,38 +64,8 @@ function reducer(state: IState, action: IAction): IState {
 		case 'cart/delete':
 			return {
 				...state,
-				cart: [...state.cart].filter((product) => product._id !== action.payload),
+				cart: state.cart.filter((_, id) => id !== action.payload),
 				cartLength: state.cartLength - 1,
-			};
-		case 'cart/edit':
-			return {
-				...state,
-				cart: [...state.cart].map((product) => {
-					if (product._id === action.payload?._id) {
-						return { ...product, color: action.payload!.color, size: action.payload!.size };
-					}
-					return product;
-				}),
-			};
-		case 'favorites/add':
-			return {
-				...state,
-				favorites: [...state.favorites, action.payload as ISelectedProduct],
-			};
-		case 'favorites/delete':
-			return {
-				...state,
-				favorites: [...state.favorites].filter((product) => product._id !== action.payload),
-			};
-		case 'favorites/edit':
-			return {
-				...state,
-				favorites: [...state.favorites].map((product) => {
-					if (product._id === action.payload?._id) {
-						return { ...product, color: action.payload!.color, size: action.payload!.size };
-					}
-					return product;
-				}),
 			};
 		default:
 			return state;
@@ -105,7 +82,10 @@ const UserContext = createContext<
 >(undefined);
 
 function UserProvider({ children }: { children: ReactNode }) {
-	const [state, dispatch] = useReducer(reducer, initialState);
+	const [{ _id, username, email, firstName, lastName, cart, cartLength, favorites, isAuthenticated }, dispatch] = useReducer(
+		reducer,
+		initialState
+	);
 
 	useEffect(() => {
 		async function fetchUserData() {
@@ -121,19 +101,32 @@ function UserProvider({ children }: { children: ReactNode }) {
 					dispatch({ type: 'user/set', payload: response.data.data });
 				} catch (err) {
 					console.error('Error fetching user data:', err);
+					toast.error('Failed to fetch user data');
 				}
 			}
+
+			if (localStorage.getItem('cart')) dispatch({ type: 'cart/sync', payload: JSON.parse(localStorage.getItem('cart')!) });
 		}
 
 		fetchUserData();
 	}, []);
+
+	useEffect(() => {
+		if (cart.length) localStorage.setItem('cart', JSON.stringify(cart));
+	}, [cart]);
 
 	function handleLogout() {
 		localStorage.removeItem('token');
 		dispatch({ type: 'user/logout' });
 	}
 
-	return <UserContext.Provider value={{ state, handleLogout, dispatch }}>{children}</UserContext.Provider>;
+	return (
+		<UserContext.Provider
+			value={{ _id, username, email, firstName, lastName, cart, cartLength, favorites, isAuthenticated, handleLogout, dispatch }}
+		>
+			{children}
+		</UserContext.Provider>
+	);
 }
 
 function useUser() {

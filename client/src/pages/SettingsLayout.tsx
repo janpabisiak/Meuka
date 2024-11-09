@@ -1,5 +1,7 @@
+import Settings from '../components/Settings';
+
 function SettingsLayout() {
-	return <h1>Settings</h1>;
+	return <Settings />;
 }
 
 export default SettingsLayout;

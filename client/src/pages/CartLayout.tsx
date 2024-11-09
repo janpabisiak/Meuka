@@ -1,5 +1,7 @@
+import Cart from '../components/Cart';
+
 function CartLayout() {
-	return <h1>Cart</h1>;
+	return <Cart />;
 }
 
 export default CartLayout;

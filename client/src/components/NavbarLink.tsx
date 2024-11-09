@@ -1,14 +1,11 @@
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
-function NavbarLink({ title, activeTitle = 'all' }: { title: string; activeTitle?: string }) {
+function NavbarLink({ title }: { title: string }) {
 	return (
 		<li>
-			<Link
-				to={`${title === 'all' ? '..' : `../${title}`}`}
-				className={`navbar__links__item ${title === activeTitle ? 'active' : ''}`}
-			>
+			<NavLink to={`${title === 'all' ? '..' : `../${title}`}`} className={`navbar__links__item`}>
 				{title}
-			</Link>
+			</NavLink>
 		</li>
 	);
 }
