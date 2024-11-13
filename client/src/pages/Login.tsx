@@ -1,10 +1,11 @@
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import { useUser } from '../contexts/userContext';
-import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 function Login() {
+	const { isAuthenticated } = useUser();
 	const {
 		register,
 		formState: { errors },
@@ -12,6 +13,10 @@ function Login() {
 	} = useForm();
 	const navigate = useNavigate();
 	const { dispatch } = useUser();
+
+	if (isAuthenticated) {
+		return <Navigate to="../" replace />;
+	}
 
 	async function onSubmit(data) {
 		try {
@@ -21,10 +26,11 @@ function Login() {
 			});
 			localStorage.setItem('token', response.data.token);
 			dispatch({ type: 'user/set', payload: response.data.data });
+			toast.success('Successfully logged in!');
 			navigate('../');
 		} catch (err) {
 			// TODO: ADD ERRORS FROM SERVER
-			console.log(err);
+			toast.error(err.response.data.message);
 		}
 	}
 
@@ -52,7 +58,6 @@ function Login() {
 					className="input"
 					type="email"
 					placeholder="E-mail"
-					aria-invalid={errors.email}
 					{...register('email', {
 						required: 'Email address is required',
 						validate: (input) => {
@@ -65,13 +70,14 @@ function Login() {
 					className="input"
 					type="password"
 					placeholder="Password"
-					aria-invalid={errors.password}
 					{...register('password', {
 						required: 'Password is required',
 					})}
 				/>
 				<div className="auth__btns">
-					<input type="submit" className="btn btn__primary" value="Log in" />
+					<button type="submit" className="btn btn__primary">
+						Log in
+					</button>
 					<Link to="../register">
 						<button className="btn btn__secondary">Create account</button>
 					</Link>

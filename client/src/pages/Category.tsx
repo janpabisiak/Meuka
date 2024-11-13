@@ -1,8 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { useProduct } from '../contexts/productContext';
-import ProductsItem from './ProductsItem';
+import ProductsItem from '../components/ProductsItem';
 
-function ProductsList() {
+function Category() {
 	const { category } = useParams();
 	const { products } = useProduct();
 
@@ -25,4 +25,4 @@ function ProductsList() {
 	return <h1>No products available.</h1>;
 }
 
-export default ProductsList;
+export default Category;
