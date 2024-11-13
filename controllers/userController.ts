@@ -148,34 +148,50 @@ const loginUser = async (req: Request, res: Response): Promise<void> => {
 	}
 };
 
-// const updateUser = async (req: Request, res: Response): Promise<void> => {
-// 	try {
-// 		const { id } = req.params;
-// 		const { email, password, firstName, lastName } = req.body;
+const changePassword = async (req: Request, res: Response): Promise<void> => {
+	try {
+		const token = req.headers['authorization']?.split(' ')[1];
 
-//         const user = await User.findOne({email: email});
+		if (token) {
+			const { currentPassword, newPassword } = req.body;
+			const { username } = jwt.verify(token, process.env.JWT_SECRET_KEY!) as TokenPayload;
 
-//         if (user) {
-// 			res.json({
-// 				status: 'failed',
-// 				message: 'There is already user with entered username or e-mail address.',
-// 			});
-// 			return;
-// 		}
+			const currentPasswordHash = CryptoJS.SHA256(currentPassword).toString();
+			const user = await User.findOne({ username: username });
+			if (user) {
+				if (user.password === currentPasswordHash) {
+					const newPasswordHash = CryptoJS.SHA256(newPassword).toString();
+					await User.findOneAndUpdate({ username: username }, { password: newPasswordHash });
 
-//         const newUser = {
-
-//         }
-
-// 		await User.findByIdAndUpdate(id);
-// 	} catch (err) {
-// 		console.log(err);
-// 		res.json({
-// 			status: 'error',
-// 			message: err,
-// 		});
-// 	}
-// };
+					res.status(201).json({
+						status: 'success',
+						message: 'Password successfully changed.',
+					});
+				} else {
+					res.status(403).json({
+						status: 'failed',
+						message: 'Provided password is not correct',
+					});
+				}
+			} else {
+				res.status(404).json({
+					status: 'failed',
+					message: 'There is no user with this id.',
+				});
+			}
+		} else {
+			res.status(403).json({
+				status: 'failed',
+				message: 'Not authorized.',
+			});
+		}
+	} catch (err) {
+		res.status(500).json({
+			status: 'error',
+			message: err,
+		});
+	}
+};
 
 const deleteUser = async (req: Request, res: Response): Promise<void> => {
 	try {
@@ -202,4 +218,4 @@ const deleteUser = async (req: Request, res: Response): Promise<void> => {
 	}
 };
 
-export { getUser, createUser, loginUser, deleteUser };
+export { getUser, createUser, loginUser, changePassword, deleteUser };

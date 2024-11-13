@@ -45,4 +45,6 @@ const login = [
 	body('password').notEmpty().withMessage('Password is required.').trim(),
 ];
 
-export { register, login };
+const changePassword = [body('newPassword').notEmpty().withMessage('Password is required.').trim()];
+
+export { register, login, changePassword };

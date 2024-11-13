@@ -8,9 +8,7 @@ router.get('/', userController.getUser);
 
 router.post('/register', userValidator.register, userController.createUser);
 router.post('/login', userValidator.login, userController.loginUser);
-
-// router.patch('/:id', userController.updateUser);
-
+router.patch('/change-password', userValidator.changePassword, userController.changePassword);
 router.delete('/:id', userController.deleteUser);
 
 export default router;
