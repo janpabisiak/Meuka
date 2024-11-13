@@ -55,3 +55,42 @@
 		}
 	}
 }
+
+@media only screen and (max-width: 768px) {
+	.products {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+
+		&__item {
+			padding: 1rem;
+			border: 1px solid $color-light;
+		}
+	}
+}
+
+@media only screen and (min-width: 769px) and (max-width: 992px) {
+	.products {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 2rem;
+
+		&__item {
+			padding: 1rem;
+			border: 1px solid $color-light;
+		}
+	}
+}
+
+@media only screen and (min-width: 993px) and (max-width: 1200px) {
+	.products {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		gap: 2rem;
+
+		&__item {
+			padding: 1rem;
+			border: 1px solid $color-light;
+		}
+	}
+}

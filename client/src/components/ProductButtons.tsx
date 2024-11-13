@@ -4,9 +4,6 @@ function ProductButtons({ onAdd }: { onAdd: (where: 'cart' | 'favorites') => voi
 			<button className="btn btn__primary" onClick={() => onAdd('cart')}>
 				Add to cart
 			</button>
-			<button className="btn btn__secondary" onClick={() => onAdd('favorites')}>
-				Save to favorites
-			</button>
 		</div>
 	);
 }

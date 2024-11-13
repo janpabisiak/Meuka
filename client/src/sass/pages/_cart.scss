@@ -1,8 +1,11 @@
 .cart {
 	display: flex;
 	justify-content: center;
-	align-items: center;
+	align-items: flex-start;
+	gap: 2rem;
 	min-height: 80vh;
+	max-width: 80vw;
+	margin: 2rem auto;
 
 	&__products {
 		display: flex;
@@ -63,6 +66,12 @@
 					font-size: 2.4rem;
 				}
 			}
+		}
+
+		&__total {
+			font-size: 2.4rem;
+			color: $color-text-primary;
+			text-align: end;
 		}
 	}
 }
