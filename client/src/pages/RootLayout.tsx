@@ -8,25 +8,40 @@ import Logo from '../components/Logo';
 import NavbarDetails from '../components/NavbarDetails';
 import NavbarCart from '../components/NavbarCart';
 import NavbarUser from '../components/NavbarUser';
+import { useUser } from '../contexts/userContext';
+import { useProduct } from '../contexts/productContext';
 
 function RootLayout() {
+	const { isLoading: isLoadingUser } = useUser();
+	const { isLoading: isLoadingItems } = useProduct();
 	const { pathname } = useLocation();
 
 	return (
 		<>
-			<Header>
-				<Navbar>
-					<NavbarLinks />
-					<Logo />
-					<NavbarDetails>
-						<NavbarUser />
-						<NavbarCart />
-					</NavbarDetails>
-				</Navbar>
-				{pathname === '/' && <Hero />}
-			</Header>
-			<Outlet />
-			<Footer />
+			{(isLoadingUser || isLoadingItems) && (
+				<div className="loader">
+					<div className="loader__box" />
+					<div className="loader__box" />
+					<div className="loader__box" />
+				</div>
+			)}
+			{!isLoadingUser && !isLoadingItems && (
+				<>
+					<Header>
+						<Navbar>
+							<NavbarLinks />
+							<Logo />
+							<NavbarDetails>
+								<NavbarUser />
+								<NavbarCart />
+							</NavbarDetails>
+						</Navbar>
+						{pathname === '/' && <Hero />}
+					</Header>
+					<Outlet />
+					<Footer />
+				</>
+			)}
 		</>
 	);
 }

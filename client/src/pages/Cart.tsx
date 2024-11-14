@@ -2,28 +2,54 @@ import toast from 'react-hot-toast';
 import { useForm } from 'react-hook-form';
 import { useProduct } from '../contexts/productContext';
 import { useUser } from '../contexts/userContext';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function Cart() {
 	const { register, formState: errors, setValue, handleSubmit } = useForm();
+	const navigate = useNavigate();
 	const { firstName, lastName, cart, dispatch } = useUser();
 	const { products } = useProduct();
 
 	const productsCart = cart
 		.map((product) => {
-			return products.filter((item) => {
-				if (item._id === product._id) {
-					item.selectedColor = product.selectedColor;
-					item.selectedSize = product.selectedSize;
-					return item;
-				}
-			});
+			const matchedItem = products.find((item) => item._id === product._id);
+			if (matchedItem) {
+				return {
+					...matchedItem,
+					selectedColor: product.selectedColor,
+					selectedSize: product.selectedSize,
+				};
+			}
+			return null;
 		})
-		.flat();
-	const total = productsCart.reduce((acc, cur) => acc + cur.price, 0);
+		.filter(Boolean);
 
-	function onSubmit() {
-		alert('Submitted');
+	const total = useMemo(() => productsCart.reduce((acc, cur) => acc + cur.price, 0), [productsCart]);
+
+	async function onSubmit(data) {
+		try {
+			await axios({
+				url: 'http://localhost:3000/api/orders',
+				method: 'post',
+				headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+				data: {
+					firstName: data.firstName,
+					lastName: data.lastName,
+					address: data.address,
+					city: data.city,
+					country: data.country,
+					products: productsCart,
+					total,
+				},
+			});
+			dispatch({ type: 'cart/reset' });
+			toast.success('Order successfully created.');
+			navigate('../orders');
+		} catch (err) {
+			toast.error(err.message);
+		}
 	}
 
 	function handleDeleteItem(id: number) {
@@ -44,10 +70,9 @@ function Cart() {
 				<h3 className="settings__form__title">Edit delivery data</h3>
 				<input className="input" type="text" placeholder="First name" {...register('firstName')} />
 				<input className="input" type="text" placeholder="Last name" {...register('lastName')} />
-				<input className="input" type="text" placeholder="Address" />
-				<input className="input" type="text" placeholder="Postal code" />
-				<input className="input" type="text" placeholder="City" />
-				<input className="input" type="text" placeholder="Country" />
+				<input className="input" type="text" placeholder="Address" {...register('address')} />
+				<input className="input" type="text" placeholder="City" {...register('city')} />
+				<input className="input" type="text" placeholder="Country" {...register('country')} />
 				<button className="btn btn__primary" type="submit">
 					Order
 				</button>

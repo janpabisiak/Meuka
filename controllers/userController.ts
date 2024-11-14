@@ -4,12 +4,7 @@ import CryptoJS from 'crypto-js';
 import jwt from 'jsonwebtoken';
 import User from '../models/userSchema';
 import { validationResult } from 'express-validator';
-
-interface TokenPayload {
-	username: string;
-	iat: number;
-	exp: number;
-}
+import TokenPayload from '../interfaces/TokenPayload';
 
 const getUser = async (req: Request, res: Response): Promise<void> => {
 	try {
@@ -33,7 +28,7 @@ const getUser = async (req: Request, res: Response): Promise<void> => {
 		} else {
 			res.status(403).json({
 				status: 'failed',
-				message: 'Unauthorized operation.',
+				message: 'Not authorized.',
 			});
 		}
 	} catch (err) {
@@ -193,6 +188,45 @@ const changePassword = async (req: Request, res: Response): Promise<void> => {
 	}
 };
 
+const updateUser = async (req: Request, res: Response): Promise<void> => {
+	try {
+		const token = req.headers['authorization']?.split(' ')[1];
+
+		if (token) {
+			const { username } = jwt.verify(token, process.env.JWT_SECRET_KEY!) as TokenPayload;
+			const { firstName, lastName, email } = req.body;
+			const user = await User.findOne({ username });
+
+			if (user) {
+				const data = await User.findOneAndUpdate(
+					{ username },
+					{
+						firstName,
+						lastName,
+						email,
+					}
+				);
+				console.log(data);
+
+				res.status(201).json({
+					status: 'success',
+					message: 'User successfully updated.',
+				});
+			}
+		} else {
+			res.status(403).json({
+				status: 'failed',
+				message: 'Not authorized.',
+			});
+		}
+	} catch (err) {
+		res.status(500).json({
+			status: 'error',
+			message: err,
+		});
+	}
+};
+
 const deleteUser = async (req: Request, res: Response): Promise<void> => {
 	try {
 		const { id } = req.params;
@@ -218,4 +252,4 @@ const deleteUser = async (req: Request, res: Response): Promise<void> => {
 	}
 };
 
-export { getUser, createUser, loginUser, changePassword, deleteUser };
+export { getUser, createUser, loginUser, changePassword, updateUser, deleteUser };

@@ -27,3 +27,48 @@ a:visited {
 .close-icon {
 	font-size: 1.6rem;
 }
+
+.loader {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 2rem;
+	background-color: $color-light;
+	height: 100vh;
+	width: 100vw;
+
+	&__box {
+		background-color: $color-text-primary;
+		width: 50px;
+		height: 50px;
+		border-radius: 10px;
+		animation-name: bounce;
+		animation-duration: 2000ms;
+		animation-iteration-count: infinite;
+		animation-fill-mode: backwards;
+
+		&:nth-of-type(2) {
+			animation-delay: 500ms;
+		}
+
+		&:nth-of-type(3) {
+			animation-delay: 1000ms;
+		}
+	}
+}
+
+@keyframes bounce {
+	0% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(20px);
+	}
+	10% {
+		transform: translateY(0);
+	}
+}
+
+.hidden {
+	display: none;
+}

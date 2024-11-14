@@ -1,14 +1,7 @@
 import mongoose from 'mongoose';
+import IUser from '../interfaces/IUser';
 
 const { Schema } = mongoose;
-
-interface IUser {
-	username: string;
-	email: string;
-	password: string;
-	firstName: string;
-	lastName: string;
-}
 
 const userSchema = new Schema<IUser>(
 	{

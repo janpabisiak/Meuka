@@ -1,11 +1,24 @@
 import { createContext, ReactNode, useContext, useReducer, Dispatch, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { IProduct } from './productContext';
 
 interface ISelectedProduct {
 	_id: string;
 	color: string;
 	size: string;
+}
+
+interface IOrder {
+	userID: string;
+	firstName: string;
+	lastName: string;
+	address: string;
+	postalCode: string;
+	city: string;
+	country: string;
+	products: IProduct[];
+	total: number;
 }
 
 interface IState {
@@ -16,14 +29,15 @@ interface IState {
 	lastName: string;
 	cart: ISelectedProduct[];
 	cartLength: number;
-	favorites: ISelectedProduct[];
+	orders: IOrder[];
 	color?: string;
 	size?: string;
 	isAuthenticated: boolean;
+	isLoading: boolean;
 }
 
 interface IAction {
-	type: 'user/set' | 'user/logout' | 'cart/sync' | 'cart/add' | 'cart/delete';
+	type: 'user/set' | 'user/isLoading' | 'user/logout' | 'cart/sync' | 'cart/add' | 'cart/delete' | 'cart/reset';
 	payload?: Partial<IState>;
 }
 
@@ -35,8 +49,9 @@ const initialState: IState = {
 	lastName: '',
 	cart: [],
 	cartLength: 0,
-	favorites: [],
+	orders: [],
 	isAuthenticated: false,
+	isLoading: true,
 };
 
 function reducer(state: IState, action: IAction): IState {
@@ -47,13 +62,18 @@ function reducer(state: IState, action: IAction): IState {
 				...action.payload,
 				isAuthenticated: true,
 			};
+		case 'user/isLoading':
+			return {
+				...state,
+				isLoading: Boolean(action.payload),
+			};
 		case 'user/logout':
 			return initialState;
 		case 'cart/sync':
 			return {
 				...state,
 				cart: action.payload as ISelectedProduct[],
-				cartLength: action.payload!.length,
+				cartLength: new Array(action.payload).length,
 			};
 		case 'cart/add':
 			return {
@@ -66,6 +86,12 @@ function reducer(state: IState, action: IAction): IState {
 				...state,
 				cart: state.cart.filter((_, id) => id !== action.payload),
 				cartLength: state.cartLength - 1,
+			};
+		case 'cart/reset':
+			return {
+				...state,
+				cart: [],
+				cartLength: 0,
 			};
 		default:
 			return state;
@@ -82,15 +108,18 @@ const UserContext = createContext<
 >(undefined);
 
 function UserProvider({ children }: { children: ReactNode }) {
-	const [{ _id, username, email, firstName, lastName, cart, cartLength, favorites, isAuthenticated }, dispatch] = useReducer(
+	const [{ _id, username, email, firstName, lastName, cart, cartLength, orders, isAuthenticated, isLoading }, dispatch] = useReducer(
 		reducer,
 		initialState
 	);
 
 	useEffect(() => {
+		async function fetchUserOrders() {}
+
 		async function fetchUserData() {
 			if (localStorage.getItem('token')) {
 				try {
+					dispatch({ type: 'user/isLoading', payload: true });
 					const response = await axios({
 						url: import.meta.env.VITE_API_LINK + '/users',
 						method: 'get',
@@ -99,6 +128,7 @@ function UserProvider({ children }: { children: ReactNode }) {
 					});
 
 					dispatch({ type: 'user/set', payload: response.data.data });
+					dispatch({ type: 'user/isLoading', payload: false });
 				} catch (err) {
 					console.error('Error fetching user data:', err);
 					toast.error('Failed to fetch user data');
@@ -122,7 +152,20 @@ function UserProvider({ children }: { children: ReactNode }) {
 
 	return (
 		<UserContext.Provider
-			value={{ _id, username, email, firstName, lastName, cart, cartLength, favorites, isAuthenticated, handleLogout, dispatch }}
+			value={{
+				_id,
+				username,
+				email,
+				firstName,
+				lastName,
+				cart,
+				cartLength,
+				orders,
+				isAuthenticated,
+				isLoading,
+				handleLogout,
+				dispatch,
+			}}
 		>
 			{children}
 		</UserContext.Provider>

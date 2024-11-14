@@ -1,4 +1,8 @@
+import { useUser } from '../contexts/userContext';
+
 function Orders() {
+	const { orders } = useUser();
+
 	return (
 		<main className="orders">
 			<div className="orders__list">

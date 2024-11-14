@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { createContext, Dispatch, ReactNode, useContext, useEffect, useReducer } from 'react';
 
-interface IProduct {
+export interface IProduct {
 	_id: string;
 	title: string;
 	price: number;
@@ -14,21 +14,25 @@ interface IProduct {
 
 interface IState {
 	products: IProduct[];
+	isLoading: boolean;
 }
 
 interface IAction {
-	type: 'products/set';
+	type: 'products/set' | 'products/isLoading';
 	payload: IProduct[];
 }
 
 const initialState: IState = {
 	products: [],
+	isLoading: true,
 };
 
 function reducer(state: IState, action: IAction) {
 	switch (action.type) {
 		case 'products/set':
 			return { ...state, products: action.payload };
+		case 'products/isLoading':
+			return { ...state, isLoading: action.payload };
 		default:
 			return state;
 	}
@@ -37,18 +41,20 @@ function reducer(state: IState, action: IAction) {
 const ProductContext = createContext<{ state: IState; dispatch: Dispatch<IAction> } | undefined>(undefined);
 
 function ProductProvider({ children }: { children: ReactNode }) {
-	const [{ products }, dispatch] = useReducer(reducer, initialState);
+	const [{ products, isLoading }, dispatch] = useReducer(reducer, initialState);
 
 	useEffect(() => {
 		async function fetchProducts() {
+			dispatch({ type: 'products/isLoading', payload: true });
 			const response = await axios({ url: import.meta.env.VITE_API_LINK + '/products', method: 'get' });
 			dispatch({ type: 'products/set', payload: response.data.data });
+			dispatch({ type: 'products/isLoading', payload: false });
 		}
 
 		fetchProducts();
 	}, []);
 
-	return <ProductContext.Provider value={{ products, dispatch }}>{children}</ProductContext.Provider>;
+	return <ProductContext.Provider value={{ products, isLoading, dispatch }}>{children}</ProductContext.Provider>;
 }
 
 function useProduct() {

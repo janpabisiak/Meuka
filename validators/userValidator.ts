@@ -45,6 +45,34 @@ const login = [
 	body('password').notEmpty().withMessage('Password is required.').trim(),
 ];
 
-const changePassword = [body('newPassword').notEmpty().withMessage('Password is required.').trim()];
+const changePassword = [
+	body('currentPassword').notEmpty().withMessage('Password is required.').trim(),
+	body('newPassword').notEmpty().withMessage('Password is required.').trim(),
+];
 
-export { register, login, changePassword };
+const update = [
+	body('email')
+		.notEmpty()
+		.withMessage('E-mail address is required.')
+		.isEmail()
+		.withMessage('Please provide a valid e-mail address.')
+		.trim(),
+
+	body('firstName')
+		.notEmpty()
+		.withMessage('First name is required.')
+		.isAlphanumeric()
+		.withMessage('First name must be alphanumeric.')
+		.trim()
+		.escape(),
+
+	body('lastName')
+		.notEmpty()
+		.withMessage('Last name is required.')
+		.isAlphanumeric()
+		.withMessage('Last name must be alphanumeric.')
+		.trim()
+		.escape(),
+];
+
+export { register, login, changePassword, update };
