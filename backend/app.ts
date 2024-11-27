@@ -11,7 +11,7 @@ import orderRoute from './routes/orderRoute';
 
 const app: Express = express();
 
-const whitelist = ['http://127.0.0.1:3000', 'http://localhost:3000', 'http://127.0.0.1:5173', 'http://localhost:5173'];
+const whitelist = process.env.API_WHITELIST?.split(',')!;
 
 // CORS configuration
 const corsOptions = {
@@ -22,15 +22,15 @@ const corsOptions = {
 			callback(new Error('Not allowed by CORS'));
 		}
 	},
-	methods: ['GET', 'POST', 'PATCH'],
+	methods: process.env.API_METHODS?.split(',')!,
 };
 
 app.use(cors(corsOptions));
 
 // Rate limiting configuration
 const limiter = rateLimit({
-	windowMs: 10 * 1000,
-	limit: 10000,
+	windowMs: +process.env.API_RATE_LIMIT_TIME! * 1000,
+	limit: +process.env.API_RATE_LIMIT_REQUESTS!,
 	standardHeaders: 'draft-7',
 	legacyHeaders: false,
 });
