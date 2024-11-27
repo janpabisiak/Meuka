@@ -11,6 +11,7 @@ import Settings from './pages/Settings';
 import NotFound from './pages/NotFound';
 import { UserProvider } from './contexts/userContext';
 import { ProductProvider } from './contexts/productContext';
+import Order from './pages/Order';
 
 function App() {
 	return (
@@ -38,14 +39,14 @@ function App() {
 					<Routes>
 						<Route element={<RootLayout />}>
 							<Route index element={<Category />} />
-							<Route path="/:category" element={<Category />} />
+							<Route path=":category" element={<Category />} />
 							<Route path="product/:id" element={<Product />} />
 							<Route path="login" element={<Login />} />
 							<Route path="register" element={<Register />} />
-							<Route path="my-orders" element={<Orders />} />
+							<Route path="orders" element={<Orders />} />
+							<Route path="order/:id" element={<Order />} />
 							<Route path="settings" element={<Settings />} />
 							<Route path="cart" element={<Cart />} />
-							<Route path="*" element={<NotFound />} />
 						</Route>
 					</Routes>
 				</BrowserRouter>

@@ -1,26 +1,8 @@
 import { createContext, ReactNode, useContext, useReducer, Dispatch, useEffect } from 'react';
-import axios from 'axios';
 import toast from 'react-hot-toast';
-import { IProduct } from './productContext';
-
-interface ISelectedProduct {
-	_id: string;
-	color: string;
-	size: string;
-}
-
-interface IOrder {
-	userID: string;
-	firstName: string;
-	lastName: string;
-	address: string;
-	postalCode: string;
-	city: string;
-	country: string;
-	products: IProduct[];
-	total: number;
-}
-
+import sendRequest from '../utils/sendRequest';
+import IOrder from '../interfaces/IOrder';
+import ISelectedProduct from '../interfaces/ISelectedProduct';
 interface IState {
 	_id: string;
 	username: string;
@@ -28,7 +10,6 @@ interface IState {
 	firstName: string;
 	lastName: string;
 	cart: ISelectedProduct[];
-	cartLength: number;
 	orders: IOrder[];
 	color?: string;
 	size?: string;
@@ -48,7 +29,6 @@ const initialState: IState = {
 	firstName: '',
 	lastName: '',
 	cart: [],
-	cartLength: 0,
 	orders: [],
 	isAuthenticated: false,
 	isLoading: true,
@@ -59,7 +39,8 @@ function reducer(state: IState, action: IAction): IState {
 		case 'user/set':
 			return {
 				...state,
-				...action.payload,
+				...action.payload[0],
+				orders: action.payload[1],
 				isAuthenticated: true,
 			};
 		case 'user/isLoading':
@@ -73,25 +54,23 @@ function reducer(state: IState, action: IAction): IState {
 			return {
 				...state,
 				cart: action.payload as ISelectedProduct[],
-				cartLength: new Array(action.payload).length,
 			};
 		case 'cart/add':
 			return {
 				...state,
 				cart: [...state.cart, action.payload as ISelectedProduct],
-				cartLength: state.cartLength + 1,
 			};
 		case 'cart/delete':
+			localStorage.setItem('cart', JSON.stringify(state.cart.filter((_, id) => id !== action.payload)));
 			return {
 				...state,
 				cart: state.cart.filter((_, id) => id !== action.payload),
-				cartLength: state.cartLength - 1,
 			};
 		case 'cart/reset':
+			localStorage.setItem('cart', JSON.stringify([]));
 			return {
 				...state,
 				cart: [],
-				cartLength: 0,
 			};
 		default:
 			return state;
@@ -108,38 +87,42 @@ const UserContext = createContext<
 >(undefined);
 
 function UserProvider({ children }: { children: ReactNode }) {
-	const [{ _id, username, email, firstName, lastName, cart, cartLength, orders, isAuthenticated, isLoading }, dispatch] = useReducer(
+	const [{ _id, username, email, firstName, lastName, cart, orders, isAuthenticated, isLoading }, dispatch] = useReducer(
 		reducer,
 		initialState
 	);
 
 	useEffect(() => {
-		async function fetchUserOrders() {}
-
-		async function fetchUserData() {
+		async function fetchData() {
+			dispatch({ type: 'user/isLoading', payload: true });
 			if (localStorage.getItem('token')) {
 				try {
-					dispatch({ type: 'user/isLoading', payload: true });
-					const response = await axios({
-						url: import.meta.env.VITE_API_LINK + '/users',
-						method: 'get',
-						headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-						timeout: import.meta.env.VITE_API_TIMEOUT,
+					const data = [
+						await sendRequest({ route: '/users', method: 'get', token: String(localStorage.getItem('token')) }),
+						await sendRequest({ route: '/orders', method: 'get', token: String(localStorage.getItem('token')) }),
+					].map((response) => {
+						const {
+							data: { data },
+						} = response;
+
+						return data;
 					});
 
-					dispatch({ type: 'user/set', payload: response.data.data });
-					dispatch({ type: 'user/isLoading', payload: false });
+					data[1] = data[1].reverse();
+					dispatch({ type: 'user/set', payload: data });
 				} catch (err) {
 					console.error('Error fetching user data:', err);
 					toast.error('Failed to fetch user data');
 				}
 			}
 
+			dispatch({ type: 'user/isLoading', payload: false });
+
 			if (localStorage.getItem('cart')) dispatch({ type: 'cart/sync', payload: JSON.parse(localStorage.getItem('cart')!) });
 		}
 
-		fetchUserData();
-	}, []);
+		fetchData();
+	}, [firstName, lastName, email, isAuthenticated]);
 
 	useEffect(() => {
 		if (cart.length) localStorage.setItem('cart', JSON.stringify(cart));
@@ -159,7 +142,6 @@ function UserProvider({ children }: { children: ReactNode }) {
 				firstName,
 				lastName,
 				cart,
-				cartLength,
 				orders,
 				isAuthenticated,
 				isLoading,

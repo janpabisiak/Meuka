@@ -1,16 +1,6 @@
-import axios from 'axios';
 import { createContext, Dispatch, ReactNode, useContext, useEffect, useReducer } from 'react';
-
-export interface IProduct {
-	_id: string;
-	title: string;
-	price: number;
-	description: string;
-	category: string;
-	images: string[];
-	colors: string[];
-	sizes: string[];
-}
+import sendRequest from '../utils/sendRequest';
+import IProduct from '../interfaces/IProduct';
 
 interface IState {
 	products: IProduct[];
@@ -46,7 +36,7 @@ function ProductProvider({ children }: { children: ReactNode }) {
 	useEffect(() => {
 		async function fetchProducts() {
 			dispatch({ type: 'products/isLoading', payload: true });
-			const response = await axios({ url: import.meta.env.VITE_API_LINK + '/products', method: 'get' });
+			const response = await sendRequest({ route: '/products', method: 'get' });
 			dispatch({ type: 'products/set', payload: response.data.data });
 			dispatch({ type: 'products/isLoading', payload: false });
 		}
