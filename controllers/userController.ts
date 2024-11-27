@@ -1,254 +1,154 @@
 import 'dotenv/config';
 import { Request, Response } from 'express';
-import CryptoJS from 'crypto-js';
 import jwt from 'jsonwebtoken';
 import User from '../models/userSchema';
-import { validationResult } from 'express-validator';
-import TokenPayload from '../interfaces/TokenPayload';
+import sendResponse from '../utils/sendResponse';
+import verifyToken from '../utils/verifyToken';
+import handleValidationErrors from '../utils/handleValidationErrors';
+import compareHashes from '../utils/compareHashes';
+import hashPassword from '../utils/hashPassword';
+import capitalizeString from '../utils/capitalizeString';
 
-const getUser = async (req: Request, res: Response): Promise<void> => {
+const getUser = async (req: Request, res: Response) => {
 	try {
-		const token = req.headers['authorization']?.split(' ')[1];
-		if (token) {
-			const { username } = jwt.verify(token, process.env.JWT_SECRET_KEY!) as TokenPayload;
+		const payload = verifyToken(req, res);
+		if (!payload) return;
 
-			const user = await User.findOne({ username }).select('-__v -password');
+		const user = await User.findOne({ username: payload.username }).select('-__v -password');
 
-			if (user) {
-				res.status(200).json({
-					status: 'success',
-					data: user,
-				});
-			} else {
-				res.status(404).json({
-					status: 'failed',
-					message: 'There is no user with this id.',
-				});
-			}
-		} else {
-			res.status(403).json({
-				status: 'failed',
-				message: 'Not authorized.',
-			});
-		}
+		if (!user) return sendResponse(res, 404, 'failed', 'There is no user with this id');
+
+		return sendResponse(res, 200, 'success', 'User successfully fetched', user);
 	} catch (err) {
 		console.log(err);
-		res.status(500).json({
-			status: 'error',
-			error: (err as Error).message,
-		});
+		return sendResponse(res, 500, 'error', 'An unexpected error happened. Try again later');
 	}
 };
 
-const createUser = async (req: Request, res: Response): Promise<void> => {
+const createUser = async (req: Request, res: Response) => {
 	try {
-		const errors = validationResult(req);
-		if (!errors.isEmpty()) {
-			res.status(400).json({
-				status: 'failed',
-				errors: errors.array(),
-			});
-		} else {
-			const { username, email, password, firstName, lastName } = req.body;
-			const user = await User.findOne({ $or: [{ username }, { email }] });
+		if (!handleValidationErrors(req, res)) return;
 
-			if (user) {
-				res.status(400).json({
-					status: 'failed',
-					message: 'There is already user with entered username or e-mail address.',
-				});
-				return;
-			}
+		const { username, email, password, firstName, lastName } = req.body;
+		const existingUser = await User.findOne({ $or: [{ username }, { email }] }).select('-__v -password');
 
-			const passwordHash = CryptoJS.SHA256(password).toString();
+		if (existingUser) return sendResponse(res, 400, 'failed', 'There is already user with entered username or e-mail address');
 
-			const newUser = {
-				username,
+		const newUser = {
+			username,
+			email,
+			password: await hashPassword(password),
+			firstName: capitalizeString(firstName),
+			lastName: capitalizeString(lastName),
+		};
+
+		await User.create(newUser);
+
+		const token = jwt.sign(
+			{
+				username: newUser.username,
+			},
+			process.env.JWT_SECRET_KEY!,
+			{ expiresIn: '7d' }
+		);
+
+		return sendResponse(res, 201, 'success', 'User successfully created', newUser, token);
+	} catch (err) {
+		console.log(err);
+		return sendResponse(res, 500, 'error', 'An unexpected error happened. Try again later');
+	}
+};
+
+const loginUser = async (req: Request, res: Response) => {
+	try {
+		if (!handleValidationErrors(req, res)) return;
+
+		const { email, password } = req.body;
+		const user = await User.findOne({ email }).select('-__v');
+
+		if (!user) return sendResponse(res, 403, 'failed', 'E-mail or password is incorrect');
+
+		if (!(await compareHashes(password, user.password))) return sendResponse(res, 403, 'failed', 'E-mail or password is incorrect');
+
+		const token = jwt.sign(
+			{
+				username: user.username,
+			},
+			process.env.JWT_SECRET_KEY!,
+			{ expiresIn: '7d' }
+		);
+
+		return sendResponse(res, 200, 'success', 'User successfully logged in', user, token);
+	} catch (err) {
+		return sendResponse(res, 500, 'error', (err as Error).message);
+	}
+};
+
+const changePassword = async (req: Request, res: Response) => {
+	try {
+		if (!handleValidationErrors(req, res)) return;
+
+		const payload = verifyToken(req, res);
+		if (!payload) return;
+
+		const { currentPassword, newPassword } = req.body;
+		const user = await User.findOne({ username: payload.username }).select('-__v');
+
+		if (!user) return sendResponse(res, 404, 'failed', 'There is no user with this id');
+
+		if (await compareHashes(currentPassword, user.password))
+			return sendResponse(res, 403, 'failed', 'Provided password is not correct');
+
+		await User.findOneAndUpdate({ username: payload.username }, { password: hashPassword(newPassword) });
+
+		return sendResponse(res, 201, 'success', 'Password successfully changed');
+	} catch (err) {
+		console.log(err);
+		return sendResponse(res, 500, 'error', 'An unexpected error happened. Try again later');
+	}
+};
+
+const updateUser = async (req: Request, res: Response) => {
+	try {
+		if (!handleValidationErrors(req, res)) return;
+
+		const payload = verifyToken(req, res);
+		if (!payload) return;
+
+		const { firstName, lastName, email } = req.body;
+		const user = await User.findOne({ username: payload.username }).select('-__v -password');
+
+		if (!user) return sendResponse(res, 404, 'failed', 'There is no user with this id');
+
+		await User.findOneAndUpdate(
+			{ username: payload.username },
+			{
+				firstName: capitalizeString(firstName),
+				lastName: capitalizeString(lastName),
 				email,
-				password: passwordHash,
-				firstName,
-				lastName,
-			};
+			}
+		);
 
-			await User.create(newUser);
-
-			const token = jwt.sign(
-				{
-					username: newUser.username,
-				},
-				process.env.JWT_SECRET_KEY!,
-				{ expiresIn: '7d' }
-			);
-
-			res.status(201).json({
-				status: 'success',
-				data: newUser,
-				token,
-			});
-		}
+		return sendResponse(res, 201, 'success', 'Use successfully updated');
 	} catch (err) {
 		console.log(err);
-		res.status(500).json({
-			status: 'error',
-			error: err,
-		});
+		return sendResponse(res, 500, 'error', 'An unexpected error happened. Try again later');
 	}
 };
 
-const loginUser = async (req: Request, res: Response): Promise<void> => {
+const deleteUser = async (req: Request, res: Response) => {
 	try {
-		const errors = validationResult(req);
-		if (!errors.isEmpty()) {
-			res.status(400).json({
-				status: 'failed',
-				errors: errors.array(),
-			});
-		} else {
-			const { email, password } = req.body;
+		if (!handleValidationErrors(req, res)) return;
 
-			const user = await User.findOne({ email });
-
-			if (user) {
-				const passwordHash = CryptoJS.SHA256(password).toString();
-
-				if (user.password == passwordHash) {
-					const token = jwt.sign(
-						{
-							username: user.username,
-						},
-						process.env.JWT_SECRET_KEY!,
-						{ expiresIn: '7d' }
-					);
-
-					res.status(200).json({
-						status: 'success',
-						data: user,
-						token,
-					});
-					return;
-				}
-			}
-
-			res.status(403).json({
-				status: 'failed',
-				message: 'E-mail or password is incorrect.',
-			});
-		}
-	} catch (err) {
-		console.log(err);
-		res.status(500).json({
-			status: 'error',
-			error: err,
-		});
-	}
-};
-
-const changePassword = async (req: Request, res: Response): Promise<void> => {
-	try {
-		const token = req.headers['authorization']?.split(' ')[1];
-
-		if (token) {
-			const { currentPassword, newPassword } = req.body;
-			const { username } = jwt.verify(token, process.env.JWT_SECRET_KEY!) as TokenPayload;
-
-			const currentPasswordHash = CryptoJS.SHA256(currentPassword).toString();
-			const user = await User.findOne({ username: username });
-			if (user) {
-				if (user.password === currentPasswordHash) {
-					const newPasswordHash = CryptoJS.SHA256(newPassword).toString();
-					await User.findOneAndUpdate({ username: username }, { password: newPasswordHash });
-
-					res.status(201).json({
-						status: 'success',
-						message: 'Password successfully changed.',
-					});
-				} else {
-					res.status(403).json({
-						status: 'failed',
-						message: 'Provided password is not correct',
-					});
-				}
-			} else {
-				res.status(404).json({
-					status: 'failed',
-					message: 'There is no user with this id.',
-				});
-			}
-		} else {
-			res.status(403).json({
-				status: 'failed',
-				message: 'Not authorized.',
-			});
-		}
-	} catch (err) {
-		res.status(500).json({
-			status: 'error',
-			message: err,
-		});
-	}
-};
-
-const updateUser = async (req: Request, res: Response): Promise<void> => {
-	try {
-		const token = req.headers['authorization']?.split(' ')[1];
-
-		if (token) {
-			const { username } = jwt.verify(token, process.env.JWT_SECRET_KEY!) as TokenPayload;
-			const { firstName, lastName, email } = req.body;
-			const user = await User.findOne({ username });
-
-			if (user) {
-				const data = await User.findOneAndUpdate(
-					{ username },
-					{
-						firstName,
-						lastName,
-						email,
-					}
-				);
-				console.log(data);
-
-				res.status(201).json({
-					status: 'success',
-					message: 'User successfully updated.',
-				});
-			}
-		} else {
-			res.status(403).json({
-				status: 'failed',
-				message: 'Not authorized.',
-			});
-		}
-	} catch (err) {
-		res.status(500).json({
-			status: 'error',
-			message: err,
-		});
-	}
-};
-
-const deleteUser = async (req: Request, res: Response): Promise<void> => {
-	try {
 		const { id } = req.params;
-
 		const user = await User.findByIdAndDelete({ id });
 
-		if (user) {
-			res.status(201).json({
-				status: 'success',
-			});
-		} else {
-			res.status(404).json({
-				status: 'failed',
-				message: 'There is no user with this id.',
-			});
-		}
+		if (!user) return sendResponse(res, 404, 'failed', 'There is no user with this id');
+
+		return sendResponse(res, 201, 'success', 'User successfully deleted');
 	} catch (err) {
 		console.log(err);
-		res.status(500).json({
-			status: 'error',
-			error: err,
-		});
+		return sendResponse(res, 500, 'error', 'An unexpected error happened. Try again later');
 	}
 };
 

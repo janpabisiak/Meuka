@@ -1,79 +1,55 @@
 import { Request, Response } from 'express';
 import Product from '../models/productSchema';
+import sendResponse from '../utils/sendResponse';
+import handleValidationErrors from '../utils/handleValidationErrors';
 
 const getProduct = async (req: Request, res: Response) => {
 	try {
+		if (!handleValidationErrors(req, res)) return;
+
 		const { id } = req.params;
 
 		const product = await Product.findById(id).select('-__v');
 
-		if (product) {
-			res.status(200).json({
-				status: 'success',
-				data: product,
-			});
-		} else {
-			res.status(404).json({
-				status: 'failed',
-				message: 'There is no product with this id.',
-			});
-		}
+		if (!product) return sendResponse(res, 404, 'failed', 'There is no product with this id');
+
+		return sendResponse(res, 200, 'success', 'Product successfully fetched', product);
 	} catch (err) {
 		console.log(err);
-		res.status(500).json({
-			status: 'error',
-			error: err,
-		});
+		return sendResponse(res, 500, 'error', 'An unexpected error happened. Try again later');
 	}
 };
 
 const getProducts = async (req: Request, res: Response) => {
 	try {
+		if (!handleValidationErrors(req, res)) return;
+
 		const { category = null } = req.query;
 		let products;
 
-		if (category) {
-			products = await Product.find().where({ category }).select('-__v');
-		} else {
-			products = await Product.find().select('-__v');
-		}
+		if (category) products = await Product.find().where({ category }).select('-__v');
+		else products = await Product.find().select('-__v');
 
-		if (products.length) {
-			res.status(200).json({
-				status: 'success',
-				data: products,
-			});
-		} else {
-			res.status(404).json({
-				status: 'failed',
-				message: 'There is no data to send.',
-			});
-		}
+		if (!products.length) return sendResponse(res, 404, 'failed', 'There is no data to send');
+
+		return sendResponse(res, 200, 'success', 'Products successfully fetched', products);
 	} catch (err) {
 		console.log(err);
-		res.status(500).json({
-			status: 'error',
-			error: err,
-		});
+		return sendResponse(res, 500, 'error', 'An unexpected error happened. Try again later');
 	}
 };
 
 const addProduct = async (req: Request, res: Response) => {
 	try {
-		const newProduct = req.body;
+		if (!handleValidationErrors(req, res)) return;
 
+		const newProduct = req.body;
 		const createdProduct = await Product.create(newProduct);
 
-		res.status(201).json({
-			status: 'success',
-			data: createdProduct,
-		});
+		return sendResponse(res, 201, 'success', 'Product successfully added', createdProduct);
 	} catch (err) {
 		console.log(err);
-		res.status(500).json({
-			status: 'error',
-			error: err,
-		});
+		return sendResponse(res, 500, 'error', 'An unexpected error happened. Try again later');
 	}
 };
 

@@ -11,6 +11,7 @@ interface IOrder {
 	country: string;
 	products: IProduct[];
 	total: number;
+	date: string;
 }
 
 export default IOrder;

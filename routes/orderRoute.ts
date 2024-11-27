@@ -1,8 +1,10 @@
 import express from 'express';
-import * as OrderController from '../controllers/orderController';
+import * as orderController from '../controllers/orderController';
+import * as orderValidator from '../validators/orderValidator';
 const router = express.Router();
 
-router.get('/', OrderController.displayOrders);
-router.post('/', OrderController.createOrder);
+router.get('/', orderController.getOrders);
+router.get('/:id', orderController.getOrder);
+router.post('/', orderValidator.create, orderController.createOrder);
 
 export default router;

@@ -1,85 +1,81 @@
-import { Request, Response } from 'express';
 import 'dotenv/config';
+import { Request, Response } from 'express';
 import User from '../models/userSchema';
 import Order from '../models/orderSchema';
-import jwt from 'jsonwebtoken';
-import TokenPayload from '../interfaces/TokenPayload';
-import IUser from '../interfaces/IUser';
+import sendResponse from '../utils/sendResponse';
+import handleValidationErrors from '../utils/handleValidationErrors';
+import verifyToken from '../utils/verifyToken';
+import capitalizeString from '../utils/capitalizeString';
 
-const createOrder = async (req: Request, res: Response): Promise<void> => {
+const createOrder = async (req: Request, res: Response) => {
 	try {
-		const token = req.headers['authorization']?.split(' ')[1];
+		if (!handleValidationErrors(req, res)) return;
 
-		if (token) {
-			const { username } = jwt.verify(token, process.env.JWT_SECRET_KEY!) as TokenPayload;
-			const user = await User.findOne({ username });
+		const payload = verifyToken(req, res);
+		if (!payload) return;
 
-			if (user) {
-				const { firstName, lastName, address, city, country, products, total } = req.body;
+		const user = await User.findOne({ username: payload.username });
 
-				const user = (await User.findOne({ username })) as IUser;
+		if (!user) return sendResponse(res, 404, 'failed', 'There is no user with provided id');
 
-				const newOrder = {
-					userID: user._id,
-					firstName,
-					lastName,
-					address,
-					city,
-					country,
-					products,
-					total,
-				};
+		const { firstName, lastName, address, city, country, products, total } = req.body;
 
-				await Order.create(newOrder);
-				res.status(201).json({
-					status: 'success',
-					message: 'Order successfully created.',
-				});
-			} else {
-				res.status(404).json({
-					status: 'failed',
-					message: 'There is no user with provided id.',
-				});
-			}
-		} else {
-			res.status(403).json({
-				status: 'failed',
-				message: 'Not authorized.',
-			});
-		}
+		const newOrder = {
+			userID: user._id,
+			firstName: capitalizeString(firstName),
+			lastName: capitalizeString(lastName),
+			address: capitalizeString(address),
+			city: capitalizeString(city),
+			country: capitalizeString(country),
+			products,
+			total,
+			date: new Date().toISOString(),
+		};
+
+		await Order.create(newOrder);
+		return sendResponse(res, 201, 'success', 'Order successfully created');
 	} catch (err) {
-		res.status(500).json({
-			status: 'error',
-			message: err,
-		});
+		console.log(err);
+		return sendResponse(res, 500, 'error', 'An unexpected error happened. Try again later');
 	}
 };
 
-const displayOrders = async (req: Request, res: Response): Promise<void> => {
-	const token = req.headers['authorization']?.split(' ')[1];
+const getOrders = async (req: Request, res: Response) => {
+	try {
+		const payload = verifyToken(req, res);
+		if (!payload) return;
 
-	if (token) {
-		const { username } = jwt.verify(token, process.env.JWT_SECRET_KEY!) as TokenPayload;
-		const user = await User.findOne({ username });
+		const user = await User.findOne({ username: payload.username });
 
-		if (user) {
-			const orders = await Order.find({ userID: user.id });
-			res.status(200).json({
-				status: 'success',
-				data: orders,
-			});
-		} else {
-			res.status(404).json({
-				status: 'failed',
-				message: 'There is no user with provided id.',
-			});
-		}
-	} else {
-		res.status(403).json({
-			status: 'failed',
-			message: 'Not authorized.',
-		});
+		if (!user) return sendResponse(res, 404, 'failed', 'There is no user with provided. id');
+
+		const orders = await Order.find({ userID: user.id });
+		return sendResponse(res, 200, 'success', 'Orders successfully fetched', orders);
+	} catch (err) {
+		console.log(err);
+		return sendResponse(res, 500, 'error', 'An unexpected error happened. Try again later');
 	}
 };
 
-export { createOrder, displayOrders };
+const getOrder = async (req: Request, res: Response) => {
+	try {
+		const payload = verifyToken(req, res);
+		if (!payload) return;
+
+		const user = await User.findOne({ username: payload.username });
+
+		if (!user) return sendResponse(res, 404, 'failed', 'User not found');
+
+		const { id: orderId } = req.params;
+		const order = await Order.findOne({ _id: orderId, userID: user.id });
+
+		if (!order) return sendResponse(res, 404, 'failed', 'Order not found or does not belong to the user.');
+
+		return sendResponse(res, 200, 'success', 'Order successfully fetched.', order);
+	} catch (err) {
+		console.log(err);
+		return sendResponse(res, 500, 'error', 'An unexpected error happened. Try again later');
+	}
+};
+
+export { createOrder, getOrders, getOrder };

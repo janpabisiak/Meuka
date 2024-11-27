@@ -36,6 +36,10 @@ const orderSchema = new Schema<IOrder>({
 		type: Number,
 		required: true,
 	},
+	date: {
+		type: String,
+		required: true,
+	},
 });
 
 export default mongoose.model<IOrder>('Order', orderSchema, 'orders');
