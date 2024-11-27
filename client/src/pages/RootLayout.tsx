@@ -11,7 +11,6 @@ import NavbarUser from '../components/navbar/NavbarUser';
 import Loader from '../components/ui/Loader';
 import { useUser } from '../contexts/userContext';
 import { useProduct } from '../contexts/productContext';
-import toast from 'react-hot-toast';
 
 function RootLayout() {
 	const {
