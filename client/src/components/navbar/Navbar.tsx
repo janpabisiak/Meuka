@@ -1,6 +1,10 @@
 import { ReactNode } from 'react';
 
-function Navbar({ children }: { children: ReactNode }) {
+interface Props {
+	children: ReactNode;
+}
+
+function Navbar({ children }: Props) {
 	return <nav className="navbar">{children}</nav>;
 }
 

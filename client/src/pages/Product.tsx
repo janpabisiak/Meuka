@@ -1,15 +1,15 @@
-import ProductImage from '../components/ProductImage';
-import ProductDetails from '../components/ProductDetails';
-import ColorsList from '../components/ColorsList';
-import SizesList from '../components/SizesList';
-import ProductButtons from '../components/ProductButtons';
-import ProductContent from '../components/ProductContent';
-import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import ProductImage from '../components/product/ProductImage';
+import ProductDetails from '../components/product/ProductDetails';
+import ColorsList from '../components/product/ColorsList';
+import SizesList from '../components/product/SizesList';
+import ProductButtons from '../components/product/ProductButtons';
+import ProductContent from '../components/product/ProductContent';
+import ProductDeliveryInfo from '../components/product/ProductDeliveryInfo';
 import { useProduct } from '../contexts/productContext';
 import { useUser } from '../contexts/userContext';
-import toast from 'react-hot-toast';
-import ProductDeliveryInfo from '../components/ProductDeliveryInfo';
 
 function Product() {
 	const [selectedColor, setSelectedColor] = useState<string>('');
@@ -18,6 +18,10 @@ function Product() {
 	const { products } = useProduct();
 	const { dispatch } = useUser();
 	const product = products.find((product) => product._id === productID);
+
+	useEffect(() => {
+		window.scrollTo(0, 0);
+	}, []);
 
 	useEffect(() => {
 		if (product) {
@@ -41,8 +45,6 @@ function Product() {
 
 	return (
 		<main className="product">
-			{/* {isLoading && <h1>Loading...</h1>}
-			{error && <h1>Error: {error.message}</h1>} */}
 			{product ? (
 				<>
 					<ProductImage image={product.images[0]} title={product.title} />

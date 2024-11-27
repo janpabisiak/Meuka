@@ -1,10 +1,14 @@
-import { useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
+import ProductsItem from '../components/product/ProductsItem';
 import { useProduct } from '../contexts/productContext';
-import ProductsItem from '../components/ProductsItem';
+
+const validCategories = ['men', 'women', 'kids'];
 
 function Category() {
 	const { category } = useParams();
 	const { products } = useProduct();
+
+	if (category && !validCategories.includes(category)) return <Navigate to="../" replace />;
 
 	const filteredProducts = category
 		? [...products].filter((product) => product.category?.toLowerCase() === category?.toLowerCase())

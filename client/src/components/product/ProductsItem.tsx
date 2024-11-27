@@ -1,14 +1,8 @@
 import { Link } from 'react-router-dom';
+import IProduct from '../../interfaces/IProduct';
 
 interface Props {
-	product: {
-		_id: string;
-		title: string;
-		category: string;
-		description: string;
-		images: string[];
-		price: number;
-	};
+	product: IProduct;
 }
 
 function ProductsItem({ product }: Props) {

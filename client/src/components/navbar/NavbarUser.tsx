@@ -1,10 +1,36 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useUser } from '../contexts/userContext';
+import { useUser } from '../../contexts/userContext';
 
 function NavbarUser() {
 	const [isOpen, setIsOpen] = useState(false);
+	const ref = useRef();
+	const [screenWidth, setScreenWidth] = useState(0);
 	const { firstName, isAuthenticated, handleLogout } = useUser();
+
+	useEffect(() => {
+		setScreenWidth(screen.width);
+	}, []);
+
+	function handleCloseModal() {
+		setIsOpen(false);
+	}
+
+	useEffect(() => {
+		function handleClickOutside(e) {
+			if (isOpen && ref.current && !ref.current.contains(e.target)) {
+				setIsOpen(false);
+			}
+		}
+
+		document.addEventListener('mousedown', handleClickOutside);
+
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, [isOpen]);
+
+	if (screenWidth <= 768) return;
 
 	if (!isAuthenticated) {
 		return (
@@ -29,11 +55,11 @@ function NavbarUser() {
 					<i className="las la-angle-down open-icon"></i>
 				</div>
 				{isOpen && (
-					<ul className="user__options">
-						<Link to="../my-orders">
+					<ul className="user__options" ref={ref}>
+						<Link to="../orders" onClick={handleCloseModal}>
 							<li className="user__options__item">My orders</li>
 						</Link>
-						<Link to="../settings">
+						<Link to="../settings" onClick={handleCloseModal}>
 							<li className="user__options__item">Settings</li>
 						</Link>
 						<li className="user__options__item" onClick={() => handleLogout()}>

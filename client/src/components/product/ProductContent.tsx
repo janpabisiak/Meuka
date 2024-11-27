@@ -1,4 +1,10 @@
-function ProductContent({ title, description, price }: { title: string; description: string; price: number }) {
+interface Props {
+	title: string;
+	description: string;
+	price: number;
+}
+
+function ProductContent({ title, description, price }: Props) {
 	return (
 		<>
 			<h2 className="product__title">{title}</h2>

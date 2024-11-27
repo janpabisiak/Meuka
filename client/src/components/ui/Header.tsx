@@ -1,8 +1,8 @@
-interface HeaderProps {
+interface Props {
 	children?: React.ReactNode;
 }
 
-function Header({ children }: HeaderProps) {
+function Header({ children }: Props) {
 	return children;
 }
 

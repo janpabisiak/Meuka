@@ -1,6 +1,11 @@
 import { useEffect, useRef } from 'react';
 
-function ProductImage({ image, title }: { image: string; title: string }) {
+interface Props {
+	image: string;
+	title: string;
+}
+
+function ProductImage({ image, title }: Props) {
 	const img = useRef<HTMLImageElement>(null);
 
 	useEffect(() => {

@@ -1,6 +1,10 @@
 import { ReactNode } from 'react';
 
-function ProductDetails({ children }: { children: ReactNode }) {
+interface Props {
+	children: ReactNode;
+}
+
+function ProductDetails({ children }: Props) {
 	return <div className="product__content">{children}</div>;
 }
 

@@ -1,0 +1,35 @@
+import { Link } from 'react-router-dom';
+import Button from '../ui/Button';
+import { useUser } from '../../contexts/userContext';
+
+function CartForm({ register, handleSubmit, onSubmit }) {
+	const { isAuthenticated, dispatch } = useUser();
+
+	if (isAuthenticated)
+		return (
+			<form className="form" onSubmit={handleSubmit(onSubmit)}>
+				<h3 className="form__title">Edit delivery data</h3>
+				<input className="input" type="text" placeholder="First name" {...register('firstName')} />
+				<input className="input" type="text" placeholder="Last name" {...register('lastName')} />
+				<input className="input" type="text" placeholder="Address" {...register('address')} />
+				<input className="input" type="text" placeholder="City" {...register('city')} />
+				<input className="input" type="text" placeholder="Country" {...register('country')} />
+				<Button text="Order" type="submit" />
+				<Button text="Clear cart" isPrimary={false} onClick={() => dispatch({ type: 'cart/reset' })} />
+			</form>
+		);
+
+	if (!isAuthenticated) {
+		return (
+			<form className="form">
+				<h3 className="form__title">You have to log in to edit personal details.</h3>
+				<Link to="../login">
+					<Button text="Log in to your account" />
+				</Link>
+				<Button text="Clear cart" isPrimary={false} onClick={() => dispatch({ type: 'cart/reset' })} />
+			</form>
+		);
+	}
+}
+
+export default CartForm;
