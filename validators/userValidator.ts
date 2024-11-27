@@ -1,78 +1,29 @@
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 
 const register = [
-	body('username')
-		.isLength({ min: 8, max: 16 })
-		.withMessage('Username must be between 8 and 16 characters long.')
-		.isAlphanumeric()
-		.withMessage('Username can only contain letters and numbers.')
-		.trim()
-		.escape(),
-
-	body('email')
-		.notEmpty()
-		.withMessage('E-mail address is required.')
-		.isEmail()
-		.withMessage('Please provide a valid e-mail address.')
-		.trim(),
-
-	body('password').isLength({ min: 8, max: 255 }).withMessage('Password must be at least 8 characters long.').trim(),
-
-	body('firstName')
-		.notEmpty()
-		.withMessage('First name is required.')
-		.isAlphanumeric()
-		.withMessage('First name must be alphanumeric.')
-		.trim()
-		.escape(),
-
-	body('lastName')
-		.notEmpty()
-		.withMessage('Last name is required.')
-		.isAlphanumeric()
-		.withMessage('Last name must be alphanumeric.')
-		.trim()
-		.escape(),
+	body('username').isString().isLength({ min: 3 }).trim().withMessage('Username must be at least 3 characters long'),
+	body('email').isEmail().trim().withMessage('Invalid email address'),
+	body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
+	body('firstName').isString().notEmpty().trim().withMessage('First name is required'),
+	body('lastName').isString().notEmpty().trim().withMessage('Last name is required'),
 ];
 
 const login = [
-	body('email')
-		.notEmpty()
-		.withMessage('E-mail address is required.')
-		.isEmail()
-		.withMessage('Please provide a valid e-mail address.')
-		.trim(),
-	body('password').notEmpty().withMessage('Password is required.').trim(),
+	body('email').isEmail().trim().withMessage('Invalid email address'),
+	body('password').notEmpty().withMessage('Password is required'),
 ];
 
 const changePassword = [
-	body('currentPassword').notEmpty().withMessage('Password is required.').trim(),
-	body('newPassword').notEmpty().withMessage('Password is required.').trim(),
+	body('currentPassword').notEmpty().withMessage('Current password is required'),
+	body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters long'),
 ];
 
 const update = [
-	body('email')
-		.notEmpty()
-		.withMessage('E-mail address is required.')
-		.isEmail()
-		.withMessage('Please provide a valid e-mail address.')
-		.trim(),
-
-	body('firstName')
-		.notEmpty()
-		.withMessage('First name is required.')
-		.isAlphanumeric()
-		.withMessage('First name must be alphanumeric.')
-		.trim()
-		.escape(),
-
-	body('lastName')
-		.notEmpty()
-		.withMessage('Last name is required.')
-		.isAlphanumeric()
-		.withMessage('Last name must be alphanumeric.')
-		.trim()
-		.escape(),
+	body('firstName').optional().isString().trim().withMessage('First name must be a string'),
+	body('lastName').optional().isString().trim().withMessage('Last name must be a string'),
+	body('email').optional().isEmail().trim().withMessage('Invalid email address'),
 ];
 
-export { register, login, changePassword, update };
+const deleteAccount = [param('id').isMongoId().withMessage('Invalid user ID format')];
+
+export { register, login, changePassword, update, deleteAccount };
