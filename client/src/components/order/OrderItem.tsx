@@ -11,7 +11,7 @@ function OrderItem({ order }: Props) {
 			.map((item) => item.title)
 			.join(', ')
 			.slice(0, 37) + '...';
-	const date = new Date(order.date);
+	const date = new Date(order.date!);
 
 	return (
 		<Link to={`../order/${order._id}`}>

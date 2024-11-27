@@ -1,9 +1,13 @@
-import IOrder from '../../interfaces/IOrder';
 import { Link } from 'react-router-dom';
+import IOrder from '../../interfaces/IOrder';
 
-function OrderDetails({ order }: IOrder) {
+interface Props {
+	order?: IOrder;
+}
+
+function OrderDetails({ order }: Props) {
 	if (order) {
-		const date = new Date(order.date);
+		const date = new Date(order.date!);
 		return (
 			<main className="cart">
 				<form className="form">

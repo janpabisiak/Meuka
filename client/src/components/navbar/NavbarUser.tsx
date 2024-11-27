@@ -4,9 +4,12 @@ import { useUser } from '../../contexts/userContext';
 
 function NavbarUser() {
 	const [isOpen, setIsOpen] = useState(false);
-	const ref = useRef();
+	const ref = useRef<HTMLUListElement>(null);
 	const [screenWidth, setScreenWidth] = useState(0);
-	const { firstName, isAuthenticated, handleLogout } = useUser();
+	const {
+		state: { firstName, isAuthenticated },
+		handleLogout,
+	} = useUser();
 
 	// Get screen width
 	useEffect(() => {
@@ -19,8 +22,8 @@ function NavbarUser() {
 
 	// Close modal when clicking outside
 	useEffect(() => {
-		function handleClickOutside(e) {
-			if (isOpen && ref.current && !ref.current.contains(e.target)) {
+		function handleClickOutside(e: MouseEvent) {
+			if (isOpen && ref.current && !ref.current.contains(e.target as Node)) {
 				setIsOpen(false);
 			}
 		}

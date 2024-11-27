@@ -1,21 +1,25 @@
 import toast from 'react-hot-toast';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { AxiosError } from 'axios';
 import AuthErrors from './AuthErrors';
 import AuthButtons from './AuthButtons';
 import sendRequest from '../../utils/sendRequest';
 import { useUser } from '../../contexts/userContext';
+import IError from '../../interfaces/IError';
+import IRegisterFormInputs from '../../interfaces/IRegisterFormInputs';
+import IRegisterResponse from '../../interfaces/IRegisterResponse';
 
 function AuthRegisterForm() {
 	const {
 		register,
 		formState: { errors },
 		handleSubmit,
-	} = useForm();
+	} = useForm<IRegisterFormInputs>();
 	const navigate = useNavigate();
 	const { dispatch } = useUser();
 
-	async function onSubmit(data) {
+	async function onSubmit(data: IRegisterFormInputs) {
 		try {
 			if (data.password !== data.confirmPassword) {
 				return;
@@ -30,7 +34,7 @@ function AuthRegisterForm() {
 				lastName,
 			};
 
-			const response = await sendRequest({
+			const response = await sendRequest<IRegisterResponse>({
 				route: '/users/register',
 				method: 'post',
 				body,
@@ -40,20 +44,21 @@ function AuthRegisterForm() {
 			dispatch({ type: 'user/set', payload: response.data.data });
 			navigate('../');
 		} catch (err) {
-			toast.error(err.response.data.message);
+			if (err instanceof AxiosError && err.response) toast.error(err.response.data.message);
+			else toast.error('An unexpected error occurred. Please try again later.');
 		}
 	}
 
 	return (
 		<form className="auth__form" onSubmit={handleSubmit(onSubmit)}>
 			<h2 className="auth__title">Create an account</h2>
-			<AuthErrors errors={errors} />
+			<AuthErrors errors={errors as IError} />
 			<div className="auth__siblings">
 				<input
 					className="input"
 					type="text"
 					placeholder="First name"
-					{...(register('firstName'), { required: 'First name is required' })}
+					{...register('firstName', { required: 'First name is required' })}
 				/>
 				<input
 					className="input"

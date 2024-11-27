@@ -11,10 +11,15 @@ import NavbarUser from '../components/navbar/NavbarUser';
 import Loader from '../components/ui/Loader';
 import { useUser } from '../contexts/userContext';
 import { useProduct } from '../contexts/productContext';
+import toast from 'react-hot-toast';
 
 function RootLayout() {
-	const { isLoading: isLoadingUser } = useUser();
-	const { isLoading: isLoadingItems } = useProduct();
+	const {
+		state: { isLoading: isLoadingUser },
+	} = useUser();
+	const {
+		state: { isLoading: isLoadingItems },
+	} = useProduct();
 	const { pathname } = useLocation();
 
 	return (

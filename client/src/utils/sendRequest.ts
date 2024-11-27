@@ -1,19 +1,20 @@
 import axios, { AxiosResponse } from 'axios';
-
-interface ISendRequest {
-	route: string;
-	method: 'get' | 'post' | 'patch';
-	token?: string;
-	body?: object;
-}
+import ISendRequest from '../interfaces/ISendRequest';
 
 // Function to send request to server in simpler way
 async function sendRequest<T>({ route, method, token, body }: ISendRequest): Promise<AxiosResponse<T>> {
 	try {
-		const options = {
+		const options: {
+			url: string;
+			method: 'get' | 'post' | 'patch';
+			timeout: number;
+			headers: { Authorization?: string };
+			data?: object;
+		} = {
 			url: import.meta.env.VITE_API_LINK + route,
 			method,
 			timeout: import.meta.env.VITE_API_TIMEOUT,
+			headers: {},
 		};
 
 		// Add token to headers if provided

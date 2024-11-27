@@ -1,28 +1,18 @@
 import { createContext, ReactNode, useContext, useReducer, Dispatch, useEffect } from 'react';
+import { AxiosResponse } from 'axios';
 import toast from 'react-hot-toast';
 import sendRequest from '../utils/sendRequest';
 import IOrder from '../interfaces/IOrder';
-import ISelectedProduct from '../interfaces/ISelectedProduct';
-interface IState {
-	_id: string;
-	username: string;
-	email: string;
-	firstName: string;
-	lastName: string;
-	cart: ISelectedProduct[];
-	orders: IOrder[];
-	color?: string;
-	size?: string;
-	isAuthenticated: boolean;
-	isLoading: boolean;
-}
+import IUser from '../interfaces/IUser';
+import ICartProduct from '../interfaces/ICartProduct';
 
 interface IAction {
 	type: 'user/set' | 'user/isLoading' | 'user/logout' | 'cart/sync' | 'cart/add' | 'cart/delete' | 'cart/reset';
-	payload?: Partial<IState>;
+
+	payload?: Partial<IUser> | [Partial<IUser>, IOrder[]] | boolean | number | ICartProduct;
 }
 
-const initialState: IState = {
+const initialState: IUser = {
 	_id: '',
 	username: '',
 	email: '',
@@ -31,16 +21,16 @@ const initialState: IState = {
 	cart: [],
 	orders: [],
 	isAuthenticated: false,
-	isLoading: true,
+	isLoading: false,
 };
 
-function reducer(state: IState, action: IAction): IState {
+function reducer(state: IUser, action: IAction): IUser {
 	switch (action.type) {
 		case 'user/set':
 			return {
 				...state,
-				...action.payload[0],
-				orders: action.payload[1],
+				...(action.payload && Array.isArray(action.payload) ? action.payload[0] : {}),
+				orders: action.payload && Array.isArray(action.payload) ? action.payload[1] : [],
 				isAuthenticated: true,
 			};
 		case 'user/isLoading':
@@ -53,12 +43,12 @@ function reducer(state: IState, action: IAction): IState {
 		case 'cart/sync':
 			return {
 				...state,
-				cart: action.payload as ISelectedProduct[],
+				cart: action.payload as ICartProduct[],
 			};
 		case 'cart/add':
 			return {
 				...state,
-				cart: [...state.cart, action.payload as ISelectedProduct],
+				cart: [...state.cart, action.payload as ICartProduct],
 			};
 		case 'cart/delete':
 			localStorage.setItem('cart', JSON.stringify(state.cart.filter((_, id) => id !== action.payload)));
@@ -79,7 +69,7 @@ function reducer(state: IState, action: IAction): IState {
 
 const UserContext = createContext<
 	| {
-			state: IState;
+			state: IUser;
 			handleLogout: () => void;
 			dispatch: Dispatch<IAction>;
 	  }
@@ -99,10 +89,12 @@ function UserProvider({ children }: { children: ReactNode }) {
 			dispatch({ type: 'user/isLoading', payload: true });
 			if (localStorage.getItem('token')) {
 				try {
-					const data = [
+					const responses: [AxiosResponse<{ data: IUser }>, AxiosResponse<{ data: IOrder[] }>] = [
 						await sendRequest({ route: '/users', method: 'get', token: String(localStorage.getItem('token')) }),
 						await sendRequest({ route: '/orders', method: 'get', token: String(localStorage.getItem('token')) }),
-					].map((response) => {
+					];
+
+					const data = responses.map((response) => {
 						const {
 							data: { data },
 						} = response;
@@ -110,8 +102,15 @@ function UserProvider({ children }: { children: ReactNode }) {
 						return data;
 					});
 
-					data[1] = data[1].reverse();
-					dispatch({ type: 'user/set', payload: data });
+					if (Array.isArray(data[1])) {
+						data[1] = data[1].reverse();
+					}
+					if (data.length === 2) {
+						dispatch({ type: 'user/set', payload: data as [IUser, IOrder[]] });
+					} else {
+						console.error('Unexpected data format:', data);
+						toast.error('Failed to fetch user data');
+					}
 				} catch (err) {
 					console.error('Error fetching user data:', err);
 					toast.error('Failed to fetch user data');
@@ -140,15 +139,17 @@ function UserProvider({ children }: { children: ReactNode }) {
 	return (
 		<UserContext.Provider
 			value={{
-				_id,
-				username,
-				email,
-				firstName,
-				lastName,
-				cart,
-				orders,
-				isAuthenticated,
-				isLoading,
+				state: {
+					_id,
+					username,
+					email,
+					firstName,
+					lastName,
+					cart,
+					orders,
+					isAuthenticated,
+					isLoading,
+				},
 				handleLogout,
 				dispatch,
 			}}

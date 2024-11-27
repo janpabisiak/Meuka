@@ -15,7 +15,9 @@ function Product() {
 	const [selectedColor, setSelectedColor] = useState<string>('');
 	const [selectedSize, setSelectedSize] = useState<string>('');
 	const { id: productID } = useParams();
-	const { products } = useProduct();
+	const {
+		state: { products },
+	} = useProduct();
 	const { dispatch } = useUser();
 	const product = products.find((product) => product._id === productID);
 
@@ -40,7 +42,7 @@ function Product() {
 		setSelectedSize(size);
 	}
 
-	function handleAdd(where: 'cart' | 'favorites') {
+	function handleAdd(where: 'cart') {
 		dispatch({ type: `${where}/add`, payload: { _id: productID, selectedColor, selectedSize } });
 		toast.success('Product added to cart');
 	}

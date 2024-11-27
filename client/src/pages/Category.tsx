@@ -6,7 +6,9 @@ const validCategories = ['men', 'women', 'kids'];
 
 function Category() {
 	const { category } = useParams();
-	const { products } = useProduct();
+	const {
+		state: { products },
+	} = useProduct();
 
 	// Redirect if category is invalid
 	if (category && !validCategories.includes(category)) return <Navigate to="../" replace />;

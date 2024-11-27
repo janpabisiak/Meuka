@@ -2,17 +2,24 @@ import toast from 'react-hot-toast';
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { AxiosError } from 'axios';
 import CartList from '../components/cart/CartList';
 import CartForm from '../components/cart/CartForm';
 import sendRequest from '../utils/sendRequest';
 import { useUser } from '../contexts/userContext';
 import { useProduct } from '../contexts/productContext';
+import ICartFormInputs from '../interfaces/ICartFormInputs';
 
 function Cart() {
-	const { register, setValue, handleSubmit } = useForm();
+	const { register, setValue, handleSubmit } = useForm<ICartFormInputs>();
 	const navigate = useNavigate();
-	const { firstName, lastName, cart, dispatch } = useUser();
-	const { products } = useProduct();
+	const {
+		state: { firstName, lastName, cart },
+		dispatch,
+	} = useUser();
+	const {
+		state: { products },
+	} = useProduct();
 
 	// Get products from cart
 	const selectedProducts = cart
@@ -27,12 +34,12 @@ function Cart() {
 			}
 			return null;
 		})
-		.filter(Boolean);
+		.filter((product): product is NonNullable<typeof product> => product !== null);
 
 	// Calculate total price of cart
-	const total = useMemo(() => selectedProducts.reduce((acc, cur) => acc + cur.price, 0).toFixed(2), [selectedProducts]);
+	const total = useMemo(() => parseFloat(selectedProducts.reduce((acc, cur) => acc + cur!.price, 0).toFixed(2)), [selectedProducts]);
 
-	async function onSubmit(data) {
+	async function onSubmit(data: ICartFormInputs) {
 		try {
 			const { firstName, lastName, address, city, country } = data;
 			const body = {
@@ -50,7 +57,8 @@ function Cart() {
 			toast.success('Order successfully created.');
 			navigate('../');
 		} catch (err) {
-			toast.error(err.message);
+			if (err instanceof AxiosError) toast.error(err.message);
+			else toast.error('Failed to create order.');
 		}
 	}
 

@@ -8,7 +8,9 @@ const navbarLinksMobileAll = ['orders', 'settings', 'logout'];
 function NavbarLinks() {
 	const [isNavbarOpen, setIsNavbarOpen] = useState(false);
 	const [screenWidth, setScreenWidth] = useState(0);
-	const { isAuthenticated } = useUser();
+	const {
+		state: { isAuthenticated },
+	} = useUser();
 
 	useEffect(() => {
 		setScreenWidth(screen.width);

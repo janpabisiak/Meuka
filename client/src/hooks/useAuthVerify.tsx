@@ -4,7 +4,9 @@ import { useUser } from '../contexts/userContext';
 
 // Hook to verify if user is authenticated
 function useAuthVerify(authNeeded = true) {
-	const { isAuthenticated } = useUser();
+	const {
+		state: { isAuthenticated },
+	} = useUser();
 	const navigate = useNavigate();
 
 	useEffect(() => {

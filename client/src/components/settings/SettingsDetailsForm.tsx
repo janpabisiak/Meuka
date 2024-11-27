@@ -1,13 +1,18 @@
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useForm } from 'react-hook-form';
+import { AxiosError } from 'axios';
 import Button from '../ui/Button';
 import { useUser } from '../../contexts/userContext';
 import sendRequest from '../../utils/sendRequest';
+import ISettingsDetailsFormInputs from '../../interfaces/ISettingsDetailsFormInputs';
 
 function SettingsDetailsForm() {
-	const { firstName, lastName, email, dispatch } = useUser();
-	const { register, reset, handleSubmit } = useForm({
+	const {
+		state: { firstName, lastName, email },
+		dispatch,
+	} = useUser();
+	const { register, reset, handleSubmit } = useForm<ISettingsDetailsFormInputs>({
 		defaultValues: {
 			firstName,
 			lastName,
@@ -25,7 +30,7 @@ function SettingsDetailsForm() {
 		}
 	}, [firstName, lastName, email, reset]);
 
-	async function onSubmitDetailsChange(data) {
+	async function onSubmitDetailsChange(data: ISettingsDetailsFormInputs) {
 		try {
 			const { firstName, lastName, email } = data;
 			const body = {
@@ -41,9 +46,10 @@ function SettingsDetailsForm() {
 				body,
 			});
 			toast.success('Data successfully updated');
-			dispatch({ type: 'user/set', payload: [{ firstName, lastName, email }] });
+			dispatch({ type: 'user/set', payload: { firstName, lastName, email } });
 		} catch (err) {
-			toast.error(err.response.data.message);
+			if (err instanceof AxiosError && err.response) toast.error(err.response.data.message);
+			else toast.error('Failed to update data');
 		}
 	}
 

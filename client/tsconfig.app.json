@@ -20,5 +20,5 @@
 		"noUnusedParameters": true,
 		"noFallthroughCasesInSwitch": true
 	},
-	"include": ["src", "src/pages/Category.tsx"]
+	"include": ["src", "vite-env.d.ts"]
 }

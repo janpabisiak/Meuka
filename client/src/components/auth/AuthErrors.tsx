@@ -1,5 +1,4 @@
 import IError from '../../interfaces/IError';
-
 interface Props {
 	errors: IError;
 }

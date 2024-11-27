@@ -1,16 +1,18 @@
 import toast from 'react-hot-toast';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { AxiosError } from 'axios';
 import Button from '../ui/Button';
 import { useUser } from '../../contexts/userContext';
 import sendRequest from '../../utils/sendRequest';
+import ISettingsPasswordFormInputs from '../../interfaces/ISettingsPasswordFormInputs';
 
 function SettingsPasswordForm() {
 	const { dispatch } = useUser();
 	const navigate = useNavigate();
-	const { register, handleSubmit } = useForm();
+	const { register, handleSubmit } = useForm<ISettingsPasswordFormInputs>();
 
-	async function onSubmitPasswordChange(data) {
+	async function onSubmitPasswordChange(data: ISettingsPasswordFormInputs) {
 		try {
 			const { currentPassword, newPassword } = data;
 
@@ -30,7 +32,8 @@ function SettingsPasswordForm() {
 			toast.success('Password successfully changed.');
 			navigate('../');
 		} catch (err) {
-			toast.error(err.response.data.message);
+			if (err instanceof AxiosError && err.response) toast.error(err.response.data.message);
+			else toast.error('Failed to change password');
 		}
 	}
 

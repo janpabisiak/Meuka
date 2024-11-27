@@ -2,10 +2,10 @@ import toast from 'react-hot-toast';
 import CartItem from './CartItem';
 import CartTotal from './CartTotal';
 import { useUser } from '../../contexts/userContext';
-import IProduct from '../../interfaces/IProduct';
+import ICartProduct from '../../interfaces/ICartProduct';
 
 interface Props {
-	selectedProducts: IProduct[];
+	selectedProducts: ICartProduct[];
 	total: number;
 }
 

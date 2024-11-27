@@ -1,9 +1,22 @@
 import { Link } from 'react-router-dom';
+import { UseFormHandleSubmit, UseFormRegister } from 'react-hook-form';
 import Button from '../ui/Button';
 import { useUser } from '../../contexts/userContext';
+import ICartFormInputs from '../../interfaces/ICartFormInputs';
 
-function CartForm({ register, handleSubmit, onSubmit }) {
-	const { isAuthenticated, dispatch } = useUser();
+function CartForm({
+	register,
+	handleSubmit,
+	onSubmit,
+}: {
+	register: UseFormRegister<ICartFormInputs>;
+	handleSubmit: UseFormHandleSubmit<ICartFormInputs>;
+	onSubmit: (data: ICartFormInputs) => void;
+}) {
+	const {
+		state: { isAuthenticated },
+		dispatch,
+	} = useUser();
 
 	if (isAuthenticated)
 		return (

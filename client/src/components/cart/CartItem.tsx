@@ -1,7 +1,7 @@
-import ICartProduct from '../../interfaces/ICartProduct';
 import CartItemContent from './CartItemContent';
 import CartItemDetails from './CartItemDetails';
 import CartItemImage from './CartItemImage';
+import ICartProduct from '../../interfaces/ICartProduct';
 
 interface Props {
 	product: ICartProduct;

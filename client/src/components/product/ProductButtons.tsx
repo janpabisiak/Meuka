@@ -1,7 +1,7 @@
 import Button from '../ui/Button';
 
 interface Props {
-	onAdd: (where: 'cart' | 'favorites') => void;
+	onAdd: (where: 'cart') => void;
 }
 
 function ProductButtons({ onAdd }: Props) {
