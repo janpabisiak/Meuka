@@ -44,6 +44,8 @@
 			border-bottom: 3px solid $color-text-primary;
 			transition: 300ms;
 			padding: 0 1rem;
+			word-wrap: break-word;
+			max-width: 100%;
 			z-index: 10;
 
 			&::after {
@@ -210,8 +212,39 @@
 		gap: 2rem;
 		padding: 2rem 6rem;
 
+		&__content {
+			max-width: 100%;
+		}
+
+		.product__title {
+			font-size: 3.2rem;
+		}
+
+		.product__price {
+			font-size: 2.4rem;
+		}
+
+		.product__colors {
+			&__item {
+				height: 4rem;
+				width: 4rem;
+			}
+		}
+
+		.product__buttons {
+			width: 100%;
+
+			& .btn {
+				width: 100%;
+			}
+		}
+
 		&__delivery__info {
-			margin: 2rem 3rem;
+			margin-top: 2rem;
+
+			&__icon {
+				display: none;
+			}
 		}
 	}
 }

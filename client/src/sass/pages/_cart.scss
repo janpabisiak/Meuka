@@ -1,11 +1,5 @@
 .cart {
-	display: flex;
-	justify-content: center;
-	align-items: flex-start;
-	gap: 2rem;
-	min-height: 80vh;
-	max-width: 80vw;
-	margin: 2rem auto;
+	@include section;
 
 	&__products {
 		display: flex;
@@ -72,6 +66,26 @@
 			font-size: 2.4rem;
 			color: $color-text-primary;
 			text-align: end;
+		}
+	}
+}
+
+@media only screen and (max-width: 768px) {
+	.cart {
+		&__products {
+			width: 100%;
+
+			&__item {
+				position: relative;
+				flex-direction: column;
+				gap: 1rem;
+
+				&__details {
+					position: absolute;
+					top: 0;
+					right: 0;
+				}
+			}
 		}
 	}
 }

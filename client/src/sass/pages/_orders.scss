@@ -1,0 +1,50 @@
+.orders {
+	@include section;
+
+	&__list {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		width: 100%;
+	}
+
+	&__item {
+		display: flex;
+		flex-direction: column;
+		border: 3px solid $color-light;
+		padding: 1rem;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+
+	&__content {
+		margin-bottom: 1rem;
+
+		&__title {
+			font-size: 2.4rem;
+			color: $color-text-primary;
+		}
+
+		&__no-items {
+			margin-right: 1rem;
+		}
+
+		&__no-items,
+		&__date {
+			font-size: 1.6rem;
+			color: $color-text-secondary;
+		}
+
+		&__details {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		&__price {
+			font-size: 1.8rem;
+			font-weight: bold;
+			color: $color-text-primary;
+		}
+	}
+}

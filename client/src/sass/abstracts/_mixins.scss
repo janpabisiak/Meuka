@@ -1,0 +1,13 @@
+@mixin section {
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	gap: 2rem;
+	min-height: 80vh;
+	max-width: 80vw;
+	margin: 2rem auto;
+
+	@media only screen and (max-width: 768px) {
+		flex-direction: column;
+	}
+}

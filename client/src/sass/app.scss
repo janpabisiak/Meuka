@@ -5,11 +5,13 @@
 @import 'components/inputs';
 @import 'layout/footer';
 @import 'layout/header';
+@import 'layout/loader';
 @import 'layout/navigation';
-@import 'pages/home';
-@import 'pages/product';
 @import 'pages/authentication';
 @import 'pages/cart';
+@import 'pages/home';
+@import 'pages/orders';
+@import 'pages/product';
 @import 'pages/settings';
 @import 'sections/hero';
 @import 'sections/products';

@@ -29,6 +29,7 @@
 			color: $color-text-primary;
 			font-size: 1.8rem;
 			text-transform: capitalize;
+			cursor: pointer;
 
 			&.active {
 				background-color: $color-text-primary;
@@ -55,6 +56,45 @@
 
 			&:hover::after {
 				width: 100%;
+			}
+		}
+
+		&__mobile {
+			display: flex; // change to flex
+			justify-content: center;
+			align-items: center;
+			flex-direction: column;
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			width: 100%;
+			height: 100%;
+			transform: translate(-50%, -50%);
+			background-color: $color-light;
+			z-index: 100;
+
+			.icon {
+				font-size: 4.8rem;
+				color: $color-text-primary;
+				position: absolute;
+				top: 3%;
+				right: 3%;
+			}
+
+			.logo {
+				@extend .navbar__logo;
+				position: absolute;
+				top: 3%;
+				left: 3%;
+			}
+
+			.navbar__links {
+				flex-direction: column;
+				align-items: center;
+
+				&__item {
+					font-size: 2rem;
+				}
 			}
 		}
 	}
@@ -133,6 +173,7 @@
 			border-radius: 10px;
 			transition: 0.3s border, 0.3s color;
 			color: $color-text-secondary;
+			user-select: none;
 
 			&:hover {
 				border: 2px solid $color-text-primary;
@@ -147,5 +188,11 @@
 				font-size: 1.8rem;
 			}
 		}
+	}
+}
+
+@media only screen and (max-width: 768px) {
+	.navbar {
+		padding: 1rem 0;
 	}
 }

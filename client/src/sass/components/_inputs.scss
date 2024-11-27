@@ -1,3 +1,25 @@
+.form {
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+	padding: 2rem;
+	color: $color-text-primary;
+	width: 50%;
+	border: 3px solid $color-light;
+
+	@media only screen and (max-width: 768px) {
+		width: 100%;
+	}
+
+	&__title {
+		font-size: 1.8rem;
+	}
+
+	& * {
+		width: 100%;
+	}
+}
+
 .input {
 	padding: 1.5rem;
 	border-radius: 3px;
@@ -9,5 +31,12 @@
 
 	&:focus {
 		background-color: darken(#fff, 3%);
+	}
+
+	&:disabled {
+		color: $color-text-primary;
+		background-color: $color-light;
+		opacity: 1;
+		cursor: not-allowed;
 	}
 }

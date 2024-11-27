@@ -1,22 +1,3 @@
 .settings {
-	display: flex;
-	justify-content: center;
-	align-items: flex-start;
-	min-height: 80vh;
-	gap: 2rem;
-	margin: 2rem 0;
-
-	&__form {
-		display: flex;
-		flex-direction: column;
-		gap: 2rem;
-		padding: 2rem;
-		color: $color-text-primary;
-		width: 50rem;
-		border: 3px solid $color-light;
-
-		&__title {
-			font-size: 1.8rem;
-		}
-	}
+	@include section;
 }
