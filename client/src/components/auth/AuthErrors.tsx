@@ -4,6 +4,7 @@ interface Props {
 	errors: IError;
 }
 
+// Component to display authentication errors
 function AuthErrors({ errors }: Props) {
 	return (
 		<>

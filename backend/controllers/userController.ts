@@ -11,6 +11,7 @@ import capitalizeString from '../utils/capitalizeString';
 
 const getUser = async (req: Request, res: Response) => {
 	try {
+		// Verify JWT token
 		const payload = verifyToken(req, res);
 		if (!payload) return;
 

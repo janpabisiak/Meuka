@@ -8,8 +8,10 @@ function Category() {
 	const { category } = useParams();
 	const { products } = useProduct();
 
+	// Redirect if category is invalid
 	if (category && !validCategories.includes(category)) return <Navigate to="../" replace />;
 
+	// Filter products by category
 	const filteredProducts = category
 		? [...products].filter((product) => product.category?.toLowerCase() === category?.toLowerCase())
 		: products;

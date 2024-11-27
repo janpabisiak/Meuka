@@ -19,10 +19,12 @@ function Product() {
 	const { dispatch } = useUser();
 	const product = products.find((product) => product._id === productID);
 
+	// Scroll to top on mount
 	useEffect(() => {
 		window.scrollTo(0, 0);
 	}, []);
 
+	// Set default color and size
 	useEffect(() => {
 		if (product) {
 			setSelectedColor(product.colors[0]);

@@ -6,6 +6,7 @@ dotenv.config();
 const PORT = process.env.PORT || 3000;
 const DB = process.env.DATABASE_URL!.replace('<PASSWORD>', process.env.DATABASE_PASSWORD!);
 
+// Connect to database and start server
 mongoose
 	.connect(DB)
 	.then(() => {

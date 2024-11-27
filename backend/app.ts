@@ -13,6 +13,7 @@ const app: Express = express();
 
 const whitelist = ['http://127.0.0.1:3000', 'http://localhost:3000', 'http://127.0.0.1:5173', 'http://localhost:5173'];
 
+// CORS configuration
 const corsOptions = {
 	origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
 		if (!origin || whitelist.includes(origin)) {
@@ -26,6 +27,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+// Rate limiting configuration
 const limiter = rateLimit({
 	windowMs: 10 * 1000,
 	limit: 10000,
@@ -34,10 +36,10 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
-app.use(morgan('dev'));
-app.use(helmet());
-app.use(hpp());
-app.use(bodyParser.json());
+app.use(morgan('dev')); // Logging
+app.use(helmet()); // Security headers
+app.use(hpp()); // HTTP Parameter Pollution protection
+app.use(bodyParser.json()); // JSON body parser
 
 app.use('/api/users', userRoute);
 app.use('/api/products', productRoute);

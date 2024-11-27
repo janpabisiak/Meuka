@@ -30,9 +30,11 @@ function reducer(state: IState, action: IAction) {
 
 const ProductContext = createContext<{ state: IState; dispatch: Dispatch<IAction> } | undefined>(undefined);
 
+// Provider to wrap the application and provide the product state and dispatch function
 function ProductProvider({ children }: { children: ReactNode }) {
 	const [{ products, isLoading }, dispatch] = useReducer(reducer, initialState);
 
+	// Fetch products on component mount
 	useEffect(() => {
 		async function fetchProducts() {
 			dispatch({ type: 'products/isLoading', payload: true });
@@ -47,6 +49,7 @@ function ProductProvider({ children }: { children: ReactNode }) {
 	return <ProductContext.Provider value={{ products, isLoading, dispatch }}>{children}</ProductContext.Provider>;
 }
 
+// Hook to use the product context
 function useProduct() {
 	const context = useContext(ProductContext);
 	if (!context) throw new Error('ProductContext used outside of ProductProvider scope.');

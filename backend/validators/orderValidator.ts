@@ -1,5 +1,6 @@
 import { body } from 'express-validator';
 
+// Validation rules for creating a new order
 const create = [
 	body('firstName').isString().notEmpty().trim().withMessage('First name is required'),
 	body('lastName').isString().notEmpty().trim().withMessage('Last name is required'),

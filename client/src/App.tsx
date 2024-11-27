@@ -8,7 +8,6 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Orders from './pages/Orders';
 import Settings from './pages/Settings';
-import NotFound from './pages/NotFound';
 import { UserProvider } from './contexts/userContext';
 import { ProductProvider } from './contexts/productContext';
 import Order from './pages/Order';

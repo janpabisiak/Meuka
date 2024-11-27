@@ -8,6 +8,7 @@ function NavbarUser() {
 	const [screenWidth, setScreenWidth] = useState(0);
 	const { firstName, isAuthenticated, handleLogout } = useUser();
 
+	// Get screen width
 	useEffect(() => {
 		setScreenWidth(screen.width);
 	}, []);
@@ -16,6 +17,7 @@ function NavbarUser() {
 		setIsOpen(false);
 	}
 
+	// Close modal when clicking outside
 	useEffect(() => {
 		function handleClickOutside(e) {
 			if (isOpen && ref.current && !ref.current.contains(e.target)) {

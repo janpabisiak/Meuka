@@ -12,6 +12,7 @@ function Order() {
 	const navigate = useNavigate();
 	const [order, setOrder] = useState<IOrder>();
 
+	// Redirect if no order id
 	useEffect(() => {
 		if (!id) {
 			navigate('../');
@@ -19,6 +20,7 @@ function Order() {
 		}
 	});
 
+	// Fetch order details
 	useEffect(() => {
 		async function fetchData() {
 			try {

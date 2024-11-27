@@ -1,3 +1,4 @@
+// Function to capitalize the first letter of each word in a given string.
 function capitalizeString(text: string) {
 	return text
 		.split(' ')

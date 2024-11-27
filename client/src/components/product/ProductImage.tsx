@@ -8,6 +8,7 @@ interface Props {
 function ProductImage({ image, title }: Props) {
 	const img = useRef<HTMLImageElement>(null);
 
+	// Move the image on mouse move
 	useEffect(() => {
 		const imgElement = img.current;
 

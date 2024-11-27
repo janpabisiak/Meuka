@@ -6,6 +6,7 @@ interface Props {
 	buttons: IAuthButton[];
 }
 
+// Component to display authentication buttons
 function AuthButtons({ buttons }: Props) {
 	return (
 		<div className="auth__btns">

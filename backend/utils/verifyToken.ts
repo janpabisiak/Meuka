@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import TokenPayload from '../interfaces/TokenPayload';
 import sendResponse from './sendResponse';
 
+// Function to verify JWT token
 const verifyToken = (req: Request, res: Response): TokenPayload | null => {
 	const token = req.headers['authorization']?.split(' ')[1];
 	if (!token) {

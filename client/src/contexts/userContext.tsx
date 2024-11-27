@@ -86,12 +86,14 @@ const UserContext = createContext<
 	| undefined
 >(undefined);
 
+// Provider to wrap the application and provide the user state and dispatch function
 function UserProvider({ children }: { children: ReactNode }) {
 	const [{ _id, username, email, firstName, lastName, cart, orders, isAuthenticated, isLoading }, dispatch] = useReducer(
 		reducer,
 		initialState
 	);
 
+	// Fetch user data on mount
 	useEffect(() => {
 		async function fetchData() {
 			dispatch({ type: 'user/isLoading', payload: true });
@@ -118,12 +120,14 @@ function UserProvider({ children }: { children: ReactNode }) {
 
 			dispatch({ type: 'user/isLoading', payload: false });
 
+			// Sync cart with localStorage
 			if (localStorage.getItem('cart')) dispatch({ type: 'cart/sync', payload: JSON.parse(localStorage.getItem('cart')!) });
 		}
 
 		fetchData();
 	}, [firstName, lastName, email, isAuthenticated]);
 
+	// Sync cart with localStorage
 	useEffect(() => {
 		if (cart.length) localStorage.setItem('cart', JSON.stringify(cart));
 	}, [cart]);
@@ -154,6 +158,7 @@ function UserProvider({ children }: { children: ReactNode }) {
 	);
 }
 
+// Hook to use the user context
 function useUser() {
 	const context = useContext(UserContext);
 	if (!context) {

@@ -7,17 +7,21 @@ import handleValidationErrors from '../utils/handleValidationErrors';
 import verifyToken from '../utils/verifyToken';
 import capitalizeString from '../utils/capitalizeString';
 
+// Function to create a new order
 const createOrder = async (req: Request, res: Response) => {
 	try {
+		// Check for validation errors
 		if (!handleValidationErrors(req, res)) return;
 
 		const payload = verifyToken(req, res);
 		if (!payload) return;
 
+		// Check if user exists
 		const user = await User.findOne({ username: payload.username });
 
 		if (!user) return sendResponse(res, 404, 'failed', 'There is no user with provided id');
 
+		// Destructure the request body to get user input
 		const { firstName, lastName, address, city, country, products, total } = req.body;
 
 		const newOrder = {

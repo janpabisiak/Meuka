@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 
+// Function to handle input validation errors
 const handleValidationErrors = (req: Request, res: Response): boolean => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {

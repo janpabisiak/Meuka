@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../contexts/userContext';
 
+// Hook to verify if user is authenticated
 function useAuthVerify(authNeeded = true) {
 	const { isAuthenticated } = useUser();
 	const navigate = useNavigate();

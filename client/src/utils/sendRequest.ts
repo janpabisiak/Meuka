@@ -7,6 +7,7 @@ interface ISendRequest {
 	body?: object;
 }
 
+// Function to send request to server in simpler way
 async function sendRequest<T>({ route, method, token, body }: ISendRequest): Promise<AxiosResponse<T>> {
 	try {
 		const options = {
@@ -15,7 +16,10 @@ async function sendRequest<T>({ route, method, token, body }: ISendRequest): Pro
 			timeout: import.meta.env.VITE_API_TIMEOUT,
 		};
 
+		// Add token to headers if provided
 		if (token) options.headers = { Authorization: `Bearer ${token}` };
+
+		// Add body to request if provided and correct method is used
 		if ((method === 'post' || method === 'patch') && body) {
 			options.data = body;
 		}

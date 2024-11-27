@@ -1,5 +1,6 @@
 import { Response } from 'express';
 
+// Function to send response to client
 const sendResponse = (res: Response, statusCode: number, status: string, message: string, data: any = null, token: any = null) => {
 	const responseBody: any = { status, message };
 	if (data) responseBody.data = data;

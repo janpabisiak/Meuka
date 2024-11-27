@@ -14,6 +14,7 @@ function Cart() {
 	const { firstName, lastName, cart, dispatch } = useUser();
 	const { products } = useProduct();
 
+	// Get products from cart
 	const selectedProducts = cart
 		.map((product) => {
 			const matchedItem = products.find((item) => item._id === product._id);
@@ -28,6 +29,7 @@ function Cart() {
 		})
 		.filter(Boolean);
 
+	// Calculate total price of cart
 	const total = useMemo(() => selectedProducts.reduce((acc, cur) => acc + cur.price, 0).toFixed(2), [selectedProducts]);
 
 	async function onSubmit(data) {
@@ -52,6 +54,7 @@ function Cart() {
 		}
 	}
 
+	// Set form values if user is logged in
 	useEffect(() => {
 		if (firstName && lastName) {
 			setValue('firstName', firstName);
