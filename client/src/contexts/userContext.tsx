@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useReducer, Dispatch, useEffect, useState } from 'react';
+import { createContext, ReactNode, useContext, useReducer, Dispatch, useEffect } from 'react';
 import { AxiosResponse } from 'axios';
 import toast from 'react-hot-toast';
 import sendRequest from '../utils/sendRequest';
@@ -7,7 +7,7 @@ import IUser from '../interfaces/IUser';
 import ICartProduct from '../interfaces/ICartProduct';
 
 interface IAction {
-	type: 'user/set' | 'user/isLoading' | 'user/logout' | 'cart/sync' | 'cart/add' | 'cart/delete' | 'cart/reset';
+	type: 'user/set' | 'user/isLoading' | 'user/logout' | 'cart/sync' | 'cart/add' | 'cart/delete' | 'cart/reset' | 'sync';
 
 	payload?: Partial<IUser> | [Partial<IUser>, IOrder[]] | boolean | number | ICartProduct;
 }
@@ -22,6 +22,7 @@ const initialState: IUser = {
 	orders: [],
 	isAuthenticated: false,
 	isLoading: false,
+	isSyncNeeded: false,
 };
 
 function reducer(state: IUser, action: IAction): IUser {
@@ -39,6 +40,7 @@ function reducer(state: IUser, action: IAction): IUser {
 				isLoading: Boolean(action.payload),
 			};
 		case 'user/logout':
+			localStorage.removeItem('token');
 			return initialState;
 		case 'cart/sync':
 			return {
@@ -62,6 +64,11 @@ function reducer(state: IUser, action: IAction): IUser {
 				...state,
 				cart: [],
 			};
+		case 'sync':
+			return {
+				...state,
+				isSyncNeeded: action.payload as boolean,
+			};
 		default:
 			return state;
 	}
@@ -78,7 +85,7 @@ const UserContext = createContext<
 
 // Provider to wrap the application and provide the user state and dispatch function
 function UserProvider({ children }: { children: ReactNode }) {
-	const [{ _id, username, email, firstName, lastName, cart, orders, isAuthenticated, isLoading }, dispatch] = useReducer(
+	const [{ _id, username, email, firstName, lastName, cart, orders, isAuthenticated, isLoading, isSyncNeeded }, dispatch] = useReducer(
 		reducer,
 		initialState
 	);
@@ -89,11 +96,11 @@ function UserProvider({ children }: { children: ReactNode }) {
 			dispatch({ type: 'user/isLoading', payload: true });
 
 			const token = localStorage.getItem('token');
-			if (token) {
+			if (token || isSyncNeeded) {
 				try {
 					const responses: [AxiosResponse<{ data: IUser }>, AxiosResponse<{ data: IOrder[] }>] = [
-						await sendRequest({ route: '/users', method: 'get', token }),
-						await sendRequest({ route: '/orders', method: 'get', token }),
+						await sendRequest({ route: '/users', method: 'get', token: token! }),
+						await sendRequest({ route: '/orders', method: 'get', token: token! }),
 					];
 
 					const data = responses.map((response) => {
@@ -120,13 +127,14 @@ function UserProvider({ children }: { children: ReactNode }) {
 			}
 
 			dispatch({ type: 'user/isLoading', payload: false });
+			dispatch({ type: 'sync', payload: false });
 
 			// Sync cart with localStorage
 			if (localStorage.getItem('cart')) dispatch({ type: 'cart/sync', payload: JSON.parse(localStorage.getItem('cart')!) });
 		}
 
 		fetchData();
-	}, [firstName, lastName, email, isAuthenticated]);
+	}, [firstName, lastName, email, isAuthenticated, isSyncNeeded]);
 
 	// Sync cart with localStorage
 	useEffect(() => {

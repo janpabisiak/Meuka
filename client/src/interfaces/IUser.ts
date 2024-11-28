@@ -13,6 +13,7 @@ interface IUser {
 	size?: string;
 	isAuthenticated: boolean;
 	isLoading: boolean;
+	isSyncNeeded: boolean;
 }
 
 export default IUser;
