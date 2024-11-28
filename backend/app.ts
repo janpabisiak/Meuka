@@ -58,6 +58,7 @@ app.use(
 		},
 	})
 );
+app.use('/api/products/images', express.static('data'));
 
 app.use('/api/orders', orderRoute);
 app.use(function (req, res) {
