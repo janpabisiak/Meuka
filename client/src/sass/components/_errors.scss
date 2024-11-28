@@ -1,0 +1,13 @@
+.errors {
+	font-size: 1.6rem;
+	color: $color-light;
+	background-color: brown;
+	padding: 1rem;
+	border-radius: 3px;
+	list-style: none;
+
+	&__item {
+		font-size: 1.4rem;
+		color: $color-light;
+	}
+}

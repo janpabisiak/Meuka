@@ -4,11 +4,11 @@ interface Props {
 }
 
 // Component to display authentication errors
-function AuthErrors({ errors }: Props) {
+function FormErrors({ errors }: Props) {
 	return (
 		<>
 			{errors && Object.keys(errors).length > 0 && (
-				<ul className="auth__errors">
+				<ul className="errors">
 					{Object.keys(errors).map((key, i) => (
 						<li className="auth__errors__item" key={i}>
 							{errors[key]?.message}
@@ -20,4 +20,4 @@ function AuthErrors({ errors }: Props) {
 	);
 }
 
-export default AuthErrors;
+export default FormErrors;

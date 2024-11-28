@@ -25,18 +25,6 @@
 		gap: 1rem;
 		box-shadow: 10px 10px 0 $color-text-primary;
 
-		.auth__errors {
-			background-color: brown;
-			padding: 1rem;
-			border-radius: 3px;
-			list-style: none;
-
-			&__item {
-				font-size: 1.4rem;
-				color: $color-light;
-			}
-		}
-
 		.auth__title {
 			color: $color-text-primary;
 			font-size: 3.2rem;
