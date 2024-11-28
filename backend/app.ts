@@ -46,23 +46,21 @@ app.use(bodyParser.json()); // JSON body parser
 app.use('/api/users', userRoute);
 app.use('/api/products', productRoute);
 
-// app.use(
-// 	'/api/products/images',
-// 	express.static('data', {
-// 		setHeaders: (res, path) => {
-// 			res.set('Access-Control-Allow-Origin', '*'); // Allow all origins
-// 		},
-// 	})
-// );
-
-app.use('/api/products/images', express.static('data'));
+app.use(
+	'/api/products/images',
+	express.static('data', {
+		setHeaders: (res, path) => {
+			res.set('Access-Control-Allow-Origin', '*'); // Allow all origins
+		},
+	})
+);
 
 app.use('/api/orders', orderRoute);
-// app.use(function (req, res) {
-// 	res.status(404).json({
-// 		status: 'error',
-// 		message: 'Error 404: Not found',
-// 	});
-// });
+app.use(function (req, res) {
+	res.status(404).json({
+		status: 'error',
+		message: 'Error 404: Not found',
+	});
+});
 
 export default app;
