@@ -2,7 +2,7 @@
 	display: flex;
 	justify-content: center;
 	position: relative;
-	min-height: 80vh;
+	height: 80vh;
 	margin-bottom: 5rem;
 
 	.item-1 {
@@ -24,12 +24,13 @@
 		align-items: center;
 		background-size: cover;
 		width: calc(100vw - 10rem);
-		height: 80vh;
+		height: 100%;
 		border-radius: 10px;
 		position: absolute;
 		max-width: 1600px;
 
 		&__title {
+			text-align: center;
 			font-size: 7.2rem;
 			max-width: 90%;
 			color: $color-text-primary;
@@ -40,6 +41,12 @@
 				border-radius: 10px;
 			}
 		}
+	}
+}
+
+@media only screen and (max-width: 768px) {
+	.hero {
+		display: none;
 	}
 }
 

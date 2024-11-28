@@ -46,7 +46,7 @@ function SettingsDetailsForm() {
 				body,
 			});
 			toast.success('Data successfully updated');
-			dispatch({ type: 'user/set', payload: { firstName, lastName, email } });
+			dispatch({ type: 'user/set', payload: [{ firstName, lastName, email }] });
 		} catch (err) {
 			if (err instanceof AxiosError && err.response) toast.error(err.response.data.message);
 			else toast.error('Failed to update data');
