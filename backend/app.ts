@@ -50,9 +50,6 @@ app.use(
 	cors(corsOptions),
 	express.static('data', {
 		setHeaders: (res, path) => {
-			res.set('Access-Control-Allow-Origin', '*'); // Allow all origins
-			res.set('Access-Control-Allow-Methods', 'GET');
-			res.set('Access-Control-Allow-Headers', 'Content-Type');
 			res.set('Cross-Origin-Resource-Policy', 'cross-origin');
 		},
 	})
