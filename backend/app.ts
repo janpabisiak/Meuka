@@ -11,6 +11,8 @@ import orderRoute from './routes/orderRoute';
 
 const app: Express = express();
 
+app.set('trust proxy', 1);
+
 const whitelist = process.env.API_WHITELIST?.split(',')!;
 
 // CORS configuration
