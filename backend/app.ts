@@ -18,12 +18,6 @@ const whitelist = process.env.API_WHITELIST?.split(',')!;
 // CORS configuration
 const corsOptions = {
 	origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-		console.log(origin);
-		console.log('API_WHITELIST:', process.env.API_WHITELIST);
-		console.log(
-			'Normalized Whitelist:',
-			whitelist.map((url) => url.replace(/\/$/, ''))
-		);
 		if (!origin || whitelist.includes(origin)) {
 			callback(null, true);
 		} else {
@@ -53,8 +47,12 @@ app.use('/api/users', userRoute);
 app.use('/api/products', productRoute);
 app.use(
 	'/api/products/images',
+	cors(corsOptions),
 	express.static('data', {
 		setHeaders: (res, path) => {
+			res.set('Access-Control-Allow-Origin', '*'); // Allow all origins
+			res.set('Access-Control-Allow-Methods', 'GET');
+			res.set('Access-Control-Allow-Headers', 'Content-Type');
 			res.set('Cross-Origin-Resource-Policy', 'cross-origin');
 		},
 	})
