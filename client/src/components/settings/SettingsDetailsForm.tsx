@@ -6,13 +6,20 @@ import Button from '../ui/Button';
 import { useUser } from '../../contexts/userContext';
 import sendRequest from '../../utils/sendRequest';
 import ISettingsDetailsFormInputs from '../../interfaces/ISettingsDetailsFormInputs';
+import IError from '../../interfaces/IError';
+import FormErrors from '../ui/FormErrors';
 
 function SettingsDetailsForm() {
 	const {
 		state: { firstName, lastName, email },
 		dispatch,
 	} = useUser();
-	const { register, reset, handleSubmit } = useForm<ISettingsDetailsFormInputs>({
+	const {
+		register,
+		formState: { errors },
+		reset,
+		handleSubmit,
+	} = useForm<ISettingsDetailsFormInputs>({
 		defaultValues: {
 			firstName,
 			lastName,
@@ -46,7 +53,7 @@ function SettingsDetailsForm() {
 				body,
 			});
 			toast.success('Data successfully updated');
-			dispatch({ type: 'user/set', payload: [{ firstName, lastName, email }] });
+			dispatch({ type: 'sync', payload: true });
 		} catch (err) {
 			if (err instanceof AxiosError && err.response) toast.error(err.response.data.message);
 			else toast.error('Failed to update data');
@@ -56,8 +63,14 @@ function SettingsDetailsForm() {
 	return (
 		<form className="form" onSubmit={handleSubmit(onSubmitDetailsChange)}>
 			<h3 className="form__title">Edit personal data</h3>
-			<input className="input" type="text" placeholder="First name" {...register('firstName')} />
-			<input className="input" type="text" placeholder="Last name" {...register('lastName')} />
+			<FormErrors errors={errors as IError} />
+			<input
+				className="input"
+				type="text"
+				placeholder="First name"
+				{...register('firstName', { required: 'First name is required' })}
+			/>
+			<input className="input" type="text" placeholder="Last name" {...register('lastName', { required: 'Last name is required' })} />
 			<input
 				className="input"
 				type="email"

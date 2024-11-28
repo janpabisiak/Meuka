@@ -6,11 +6,17 @@ import Button from '../ui/Button';
 import { useUser } from '../../contexts/userContext';
 import sendRequest from '../../utils/sendRequest';
 import ISettingsPasswordFormInputs from '../../interfaces/ISettingsPasswordFormInputs';
+import FormErrors from '../ui/FormErrors';
+import IError from '../../interfaces/IError';
 
 function SettingsPasswordForm() {
 	const { dispatch } = useUser();
 	const navigate = useNavigate();
-	const { register, handleSubmit } = useForm<ISettingsPasswordFormInputs>();
+	const {
+		register,
+		formState: { errors },
+		handleSubmit,
+	} = useForm<ISettingsPasswordFormInputs>();
 
 	async function onSubmitPasswordChange(data: ISettingsPasswordFormInputs) {
 		try {
@@ -40,6 +46,7 @@ function SettingsPasswordForm() {
 	return (
 		<form className="form" onSubmit={handleSubmit(onSubmitPasswordChange)}>
 			<h3 className="form__title">Change password</h3>
+			<FormErrors errors={errors as IError} />
 			<input
 				className="input"
 				type="password"

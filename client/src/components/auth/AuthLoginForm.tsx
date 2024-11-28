@@ -3,12 +3,12 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { AxiosError } from 'axios';
 import AuthButtons from './AuthButtons';
-import AuthErrors from './AuthErrors';
 import sendRequest from '../../utils/sendRequest';
 import { useUser } from '../../contexts/userContext';
 import IError from '../../interfaces/IError';
 import ILoginFormInputs from '../../interfaces/ILoginFormInputs';
 import ILoginResponse from '../../interfaces/ILoginResponse';
+import FormErrors from '../ui/FormErrors';
 
 function AuthLoginForm() {
 	const {
@@ -41,7 +41,7 @@ function AuthLoginForm() {
 	return (
 		<form className="auth__form" onSubmit={handleSubmit(onSubmit)}>
 			<h2 className="auth__title">Log in</h2>
-			<AuthErrors errors={errors as IError} />
+			<FormErrors errors={errors as IError} />
 			<input
 				className="input"
 				type="email"

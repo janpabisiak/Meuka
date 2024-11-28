@@ -1,14 +1,13 @@
 import toast from 'react-hot-toast';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { AxiosError } from 'axios';
-import AuthErrors from './AuthErrors';
 import AuthButtons from './AuthButtons';
 import sendRequest from '../../utils/sendRequest';
 import { useUser } from '../../contexts/userContext';
 import IError from '../../interfaces/IError';
 import IRegisterFormInputs from '../../interfaces/IRegisterFormInputs';
 import IRegisterResponse from '../../interfaces/IRegisterResponse';
+import FormErrors from '../ui/FormErrors';
 
 function AuthRegisterForm() {
 	const {
@@ -52,7 +51,7 @@ function AuthRegisterForm() {
 	return (
 		<form className="auth__form" onSubmit={handleSubmit(onSubmit)}>
 			<h2 className="auth__title">Create an account</h2>
-			<AuthErrors errors={errors as IError} />
+			<FormErrors errors={errors as IError} />
 			<div className="auth__siblings">
 				<input
 					className="input"
