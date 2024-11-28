@@ -11,12 +11,10 @@ mongoose
 	.connect(DB)
 	.then(() => {
 		console.log('Successfully connected to database.');
-		// app.listen(API_PORT, () => {
-		// 	console.log(`Listening on port ${API_PORT}...`);
-		// });
+		app.listen(API_PORT, () => {
+			console.log(`Listening on port ${API_PORT}...`);
+		});
 	})
 	.catch((err) => {
 		console.log(err);
 	});
-
-export default app;
