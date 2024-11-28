@@ -159,6 +159,7 @@ function UserProvider({ children }: { children: ReactNode }) {
 					orders,
 					isAuthenticated,
 					isLoading,
+					isSyncNeeded,
 				},
 				handleLogout,
 				dispatch,

@@ -8,6 +8,7 @@ import IError from '../../interfaces/IError';
 import IRegisterFormInputs from '../../interfaces/IRegisterFormInputs';
 import IRegisterResponse from '../../interfaces/IRegisterResponse';
 import FormErrors from '../ui/FormErrors';
+import { AxiosError } from 'axios';
 
 function AuthRegisterForm() {
 	const {
