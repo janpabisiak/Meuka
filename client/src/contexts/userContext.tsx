@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useReducer, Dispatch, useEffect } from 'react';
+import { createContext, ReactNode, useContext, useReducer, Dispatch, useEffect, useState } from 'react';
 import { AxiosResponse } from 'axios';
 import toast from 'react-hot-toast';
 import sendRequest from '../utils/sendRequest';
@@ -87,11 +87,13 @@ function UserProvider({ children }: { children: ReactNode }) {
 	useEffect(() => {
 		async function fetchData() {
 			dispatch({ type: 'user/isLoading', payload: true });
-			if (localStorage.getItem('token')) {
+
+			const token = localStorage.getItem('token');
+			if (token) {
 				try {
 					const responses: [AxiosResponse<{ data: IUser }>, AxiosResponse<{ data: IOrder[] }>] = [
-						await sendRequest({ route: '/users', method: 'get', token: String(localStorage.getItem('token')) }),
-						await sendRequest({ route: '/orders', method: 'get', token: String(localStorage.getItem('token')) }),
+						await sendRequest({ route: '/users', method: 'get', token }),
+						await sendRequest({ route: '/orders', method: 'get', token }),
 					];
 
 					const data = responses.map((response) => {

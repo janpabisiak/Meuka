@@ -40,9 +40,9 @@ function AuthRegisterForm() {
 				body,
 			});
 
-			localStorage.setItem('token', `Bearer ${response.data.token}`);
+			localStorage.setItem('token', response.data.token);
 			dispatch({ type: 'user/set', payload: response.data.data });
-			navigate('../');
+			navigate('../login');
 		} catch (err) {
 			if (err instanceof AxiosError && err.response) toast.error(err.response.data.message);
 			else toast.error('An unexpected error occurred. Please try again later.');
