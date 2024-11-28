@@ -22,11 +22,11 @@ function CartForm({
 		return (
 			<form className="form" onSubmit={handleSubmit(onSubmit)}>
 				<h3 className="form__title">Edit delivery data</h3>
-				<input className="input" type="text" placeholder="First name" {...register('firstName')} />
-				<input className="input" type="text" placeholder="Last name" {...register('lastName')} />
-				<input className="input" type="text" placeholder="Address" {...register('address')} />
-				<input className="input" type="text" placeholder="City" {...register('city')} />
-				<input className="input" type="text" placeholder="Country" {...register('country')} />
+				<input className="input" type="text" placeholder="First name" {...register('firstName', { required: true })} />
+				<input className="input" type="text" placeholder="Last name" {...register('lastName', { required: true })} />
+				<input className="input" type="text" placeholder="Address" {...register('address', { required: true })} />
+				<input className="input" type="text" placeholder="City" {...register('city', { required: true })} />
+				<input className="input" type="text" placeholder="Country" {...register('country', { required: true })} />
 				<Button text="Order" type="submit" />
 				<Button text="Clear cart" isPrimary={false} onClick={() => dispatch({ type: 'cart/reset' })} />
 			</form>
@@ -37,7 +37,7 @@ function CartForm({
 			<form className="form">
 				<h3 className="form__title">You have to log in to edit personal details.</h3>
 				<Link to="../login">
-					<Button text="Log in to your account" />
+					<Button text="Log in" />
 				</Link>
 				<Button text="Clear cart" isPrimary={false} onClick={() => dispatch({ type: 'cart/reset' })} />
 			</form>
