@@ -97,10 +97,10 @@ const changePassword = async (req: Request, res: Response) => {
 
 		if (!user) return sendResponse(res, 404, 'failed', 'There is no user with this id');
 
-		if (await compareHashes(currentPassword, user.password))
+		if (!(await compareHashes(currentPassword, user.password)))
 			return sendResponse(res, 403, 'failed', 'Provided password is not correct');
 
-		await User.findOneAndUpdate({ username: payload.username }, { password: hashPassword(newPassword) });
+		await User.findOneAndUpdate({ username: payload.username }, { password: await hashPassword(newPassword) });
 
 		return sendResponse(res, 201, 'success', 'Password successfully changed');
 	} catch (err) {
