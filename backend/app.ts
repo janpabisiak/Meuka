@@ -46,14 +46,16 @@ app.use(bodyParser.json()); // JSON body parser
 app.use('/api/users', userRoute);
 app.use('/api/products', productRoute);
 
-app.use(
-	'/api/products/images',
-	express.static('data', {
-		setHeaders: (res, path) => {
-			res.set('Access-Control-Allow-Origin', '*'); // Allow all origins
-		},
-	})
-);
+// app.use(
+// 	'/api/products/images',
+// 	express.static('data', {
+// 		setHeaders: (res, path) => {
+// 			res.set('Access-Control-Allow-Origin', '*'); // Allow all origins
+// 		},
+// 	})
+// );
+
+app.use('/api/products/images', express.static('data'));
 
 app.use('/api/orders', orderRoute);
 // app.use(function (req, res) {
