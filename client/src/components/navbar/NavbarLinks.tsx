@@ -1,22 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import NavbarLink from './NavbarLink';
 import { useUser } from '../../contexts/userContext';
+import useWindowResize from '../../hooks/useWindowResize';
 
 const navbarLinks = ['all', 'women', 'men', 'kids'];
 const navbarLinksMobileAll = ['orders', 'settings', 'logout'];
 
 function NavbarLinks() {
 	const [isNavbarOpen, setIsNavbarOpen] = useState(false);
-	const [screenWidth, setScreenWidth] = useState(0);
+	const isDesktopView = useWindowResize();
+
 	const {
 		state: { isAuthenticated },
 	} = useUser();
 
-	useEffect(() => {
-		setScreenWidth(screen.width);
-	}, []);
-
-	if (screenWidth > 768) {
+	if (isDesktopView) {
 		return (
 			<ul className="navbar__links">
 				{navbarLinks.map((title) => (

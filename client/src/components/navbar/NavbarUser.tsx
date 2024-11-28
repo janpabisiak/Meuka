@@ -1,20 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUser } from '../../contexts/userContext';
+import useWindowResize from '../../hooks/useWindowResize';
 
 function NavbarUser() {
 	const [isOpen, setIsOpen] = useState(false);
 	const ref = useRef<HTMLUListElement>(null);
-	const [screenWidth, setScreenWidth] = useState(0);
+	const isDesktopView = useWindowResize();
 	const {
 		state: { firstName, isAuthenticated },
 		handleLogout,
 	} = useUser();
-
-	// Get screen width
-	useEffect(() => {
-		setScreenWidth(screen.width);
-	}, []);
 
 	function handleCloseModal() {
 		setIsOpen(false);
@@ -35,7 +31,7 @@ function NavbarUser() {
 		};
 	}, [isOpen]);
 
-	if (screenWidth <= 768) return;
+	if (!isDesktopView) return;
 
 	if (!isAuthenticated) {
 		return (
@@ -67,7 +63,7 @@ function NavbarUser() {
 						<Link to="../settings" onClick={handleCloseModal}>
 							<li className="user__options__item">Settings</li>
 						</Link>
-						<li className="user__options__item" onClick={() => handleLogout()}>
+						<li className="user__options__item" onClick={handleLogout}>
 							Logout
 						</li>
 					</ul>
