@@ -19,6 +19,11 @@ const whitelist = process.env.API_WHITELIST?.split(',')!;
 const corsOptions = {
 	origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
 		console.log(origin);
+		console.log('API_WHITELIST:', process.env.API_WHITELIST);
+		console.log(
+			'Normalized Whitelist:',
+			whitelist.map((url) => url.replace(/\/$/, ''))
+		);
 		if (!origin || whitelist.includes(origin)) {
 			callback(null, true);
 		} else {
