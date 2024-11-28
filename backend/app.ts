@@ -8,6 +8,7 @@ import { rateLimit } from 'express-rate-limit';
 import userRoute from './routes/userRoute';
 import productRoute from './routes/productRoute';
 import orderRoute from './routes/orderRoute';
+import path from 'path';
 
 const app: Express = express();
 
@@ -47,7 +48,7 @@ app.use('/api/users', userRoute);
 app.use('/api/products', productRoute);
 app.use(
 	'/data',
-	express.static('data', {
+	express.static(path.resolve(__dirname, 'data'), {
 		setHeaders: (res) => {
 			res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
 		},
