@@ -56,11 +56,11 @@ app.use(
 );
 
 app.use('/api/orders', orderRoute);
-app.use(function (req, res) {
-	res.status(404).json({
-		status: 'error',
-		message: 'Error 404: Not found',
-	});
-});
+// app.use(function (req, res) {
+// 	res.status(404).json({
+// 		status: 'error',
+// 		message: 'Error 404: Not found',
+// 	});
+// });
 
 export default app;
