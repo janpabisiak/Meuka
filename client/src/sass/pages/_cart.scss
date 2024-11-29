@@ -70,8 +70,15 @@
 	}
 }
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 992px) {
 	.cart {
+		display: flex;
+		flex-direction: column;
+
+		* {
+			width: 100%;
+		}
+
 		&__products {
 			width: 100%;
 
