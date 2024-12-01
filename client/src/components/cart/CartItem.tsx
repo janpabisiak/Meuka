@@ -12,7 +12,7 @@ interface Props {
 function CartItem({ product, id, onDeleteItem }: Props) {
 	return (
 		<div className="cart__products__item">
-			<CartItemImage imagePath={product.images[0]} />
+			<CartItemImage imagePath={product.images[0]} alt={product.description} />
 			<CartItemContent title={product.title} size={product.selectedSize} color={product.selectedColor} />
 			<CartItemDetails onDeleteItem={onDeleteItem} id={id} price={product.price} />
 		</div>

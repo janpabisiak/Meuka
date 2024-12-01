@@ -1,11 +1,12 @@
 interface Props {
 	imagePath: string;
+	alt: string;
 }
 
-function CartItemImage({ imagePath }: Props) {
+function CartItemImage({ imagePath, alt }: Props) {
 	return (
 		<div className="cart__products__item__image">
-			<img src={imagePath} />
+			<img src={imagePath} alt={alt} />
 		</div>
 	);
 }
