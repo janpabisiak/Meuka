@@ -1,3 +1,4 @@
+import './line-awesome.min.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import RootLayout from './pages/RootLayout';
