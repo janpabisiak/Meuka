@@ -29,7 +29,7 @@ function ProductImage({ image, title }: Props) {
 
 	return (
 		<div className="product__image">
-			<img src={image} ref={img} alt={title} />
+			<img src={image} ref={img} alt={title} loading="lazy" />
 		</div>
 	);
 }

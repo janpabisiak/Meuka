@@ -12,8 +12,8 @@ function ProductsItem({ product }: Props) {
 		<Link to={`../${productLink}`}>
 			<div className="products__item">
 				<div className="products__item__image">
-					<img className="default-image" src={product.images[0]} alt={product.description} />
-					<img className="hover-image" src={product.images[1]} alt={product.description} />
+					<img className="default-image" src={product.images[0]} alt={product.description} loading="lazy" />
+					<img className="hover-image" src={product.images[1]} alt={product.description} loading="lazy" />
 				</div>
 				<div className="products__item__details">
 					<h2 className="products__item__title">{product.title}</h2>
