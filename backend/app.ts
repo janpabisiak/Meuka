@@ -9,6 +9,9 @@ import userRoute from './routes/userRoute';
 import productRoute from './routes/productRoute';
 import orderRoute from './routes/orderRoute';
 import path from 'path';
+import { setServers } from 'dns/promises';
+
+setServers(['1.1.1.1', '8.8.8.8']);
 
 const app: Express = express();
 
@@ -52,7 +55,7 @@ app.use(
 		setHeaders: (res) => {
 			res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
 		},
-	})
+	}),
 );
 app.use('/api/orders', orderRoute);
 app.use(function (req, res) {
