@@ -1,10 +1,8 @@
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
 import app from './app';
-dotenv.config();
+import { API_PORT, DATABASE_PASSWORD, DATABASE_URL } from './config';
 
-const API_PORT = process.env.PORT || 3000;
-const DB = process.env.DATABASE_URL!.replace('<PASSWORD>', process.env.DATABASE_PASSWORD!);
+const DB = DATABASE_URL.replace('<PASSWORD>', DATABASE_PASSWORD);
 
 // Connect to database and start server
 mongoose
