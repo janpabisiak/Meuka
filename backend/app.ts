@@ -5,7 +5,6 @@ import express, { Express, NextFunction, Response } from 'express';
 import { rateLimit } from 'express-rate-limit';
 import helmet from 'helmet';
 import hpp from 'hpp';
-import morgan from 'morgan';
 import path from 'path';
 import { API_METHODS, API_RATE_LIMIT_REQUESTS, API_RATE_LIMIT_TIME, API_WHITELIST } from './config';
 import { IHttpRequest } from './types/IHttpRequest';
@@ -15,6 +14,7 @@ import productRoute from './routes/productRoute';
 import userRoute from './routes/userRoute';
 import { HttpError } from './utils/httpError';
 import sendResponse from './utils/sendResponse';
+import { loggerMiddleware } from './middlewares/loggerMiddleware';
 
 setServers(['1.1.1.1', '8.8.8.8']);
 
@@ -46,7 +46,8 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-app.use(morgan('dev'));
+app.use(loggerMiddleware);
+
 app.use(helmet());
 app.use(hpp());
 
@@ -73,7 +74,7 @@ app.use((err: Error, req: IHttpRequest, res: Response, _: NextFunction) => {
 		return sendResponse(res, err.type, err.status, err.message);
 	}
 
-	console.log(err);
+	req.log.error({ err }, 'An unexpected error happened.');
 	return sendResponse(res, 500, 'error', 'An unexpected error happened. Try again later');
 });
 

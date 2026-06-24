@@ -1,5 +1,7 @@
 import 'dotenv/config';
 
+export const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+
 export const API_PORT = +process.env.API_PORT!;
 export const API_WHITELIST = process.env.API_WHITELIST!;
 export const API_METHODS = process.env.API_METHODS!;

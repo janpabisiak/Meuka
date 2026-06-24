@@ -6,18 +6,21 @@ import * as productService from '../services/productService';
 const getProduct = catchError(async (req: Request, res: Response): Promise<void> => {
 	const { id } = req.params;
 
+	req.log.info({ id }, 'Product fetch attempt.');
 	return sendResponse(res, 200, 'success', 'Product successfully fetched', await productService.getProductById(id));
 });
 
 const getProducts = catchError(async (req: Request, res: Response): Promise<void> => {
 	const { category } = req.query;
 
+	req.log.info({ category }, 'Products fetch attempt.');
 	return sendResponse(res, 200, 'success', 'Products successfully fetched', await productService.getProducts(category as string));
 });
 
 const addProduct = catchError(async (req: Request, res: Response): Promise<void> => {
 	const newProduct = req.body;
 
+	req.log.info({ newProduct }, 'Product creation attempt.');
 	return sendResponse(res, 201, 'success', 'Product successfully added', await productService.createProduct(newProduct));
 });
 

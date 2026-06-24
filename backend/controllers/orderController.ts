@@ -8,6 +8,7 @@ const createOrder = catchError(async (req: IHttpRequest, res: Response): Promise
 	const { firstName, lastName, address, city, country, products, total } = req.body;
 	const userId = req.userId!;
 
+	req.log.info({ firstName, lastName, address, city, country, products, total, userId }, 'Order creation attempt.');
 	return sendResponse(
 		res,
 		201,
@@ -20,6 +21,7 @@ const createOrder = catchError(async (req: IHttpRequest, res: Response): Promise
 const getOrders = catchError(async (req: IHttpRequest, res: Response): Promise<void> => {
 	const userId = req.userId!;
 
+	req.log.info({ userId }, 'Orders fetch attempt.');
 	return sendResponse(res, 200, 'success', 'Orders successfully fetched', await orderService.getOrders(userId));
 });
 
@@ -27,6 +29,7 @@ const getOrder = catchError(async (req: IHttpRequest, res: Response): Promise<vo
 	const { id: orderId } = req.params;
 	const userId = req.userId!;
 
+	req.log.info({ orderId, userId }, 'Order fetch attempt.');
 	return sendResponse(res, 200, 'success', 'Order successfully fetched.', await orderService.getOrderById(orderId, userId));
 });
 
