@@ -1,6 +1,12 @@
 import { ObjectId } from 'mongoose';
 import { IProduct } from './IProduct';
 
+export interface IOrderProduct {
+	id: string;
+	selectedColor: string;
+	selectedSize: string;
+}
+
 export interface IOrder {
 	id: string;
 	userID: ObjectId;
@@ -10,9 +16,11 @@ export interface IOrder {
 	postalCode: string;
 	city: string;
 	country: string;
-	products: IProduct[];
+	products: (IProduct & IOrderProduct)[];
 	total: number;
 	date: string;
 }
 
-export type CreateBody = Omit<IOrder, 'id' | 'userID' | 'postalCode' | 'products' | 'date'> & { products: number[] };
+export type CreateBody = Omit<IOrder, 'id' | 'userID' | 'postalCode' | 'date' | 'total' | 'products'> & {
+	products: IOrderProduct[];
+};

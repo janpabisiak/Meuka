@@ -13,10 +13,9 @@ import sendRequest from '../../utils/sendRequest';
 
 interface Props {
 	selectedProducts: ICartProduct[];
-	total: number;
 }
 
-function CartForm({ selectedProducts, total }: Props) {
+function CartForm({ selectedProducts }: Props) {
 	const {
 		register,
 		formState: { errors },
@@ -38,8 +37,11 @@ function CartForm({ selectedProducts, total }: Props) {
 				address,
 				city,
 				country,
-				products: selectedProducts,
-				total,
+				products: selectedProducts.map((product) => ({
+					selectedSize: product.selectedSize,
+					selectedColor: product.selectedColor,
+					id: product._id,
+				})),
 			};
 
 			await sendRequest({ route: '/orders', method: 'post', token: String(localStorage.getItem('token')), body });

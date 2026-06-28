@@ -7,16 +7,16 @@ import sendResponse from '../utils/sendResponse';
 
 export const createOrder = catchError(async (req: IHttpRequest, res: Response) => {
 	const body = req.body as CreateBody;
-	const { firstName, lastName, address, city, country, products, total } = body;
+	const { firstName, lastName, address, city, country, products } = body;
 	const userId = req.userId;
 
-	req.log.info({ firstName, lastName, address, city, country, products, total, userId }, 'Order creation attempt.');
+	req.log.info({ firstName, lastName, address, city, country, products, userId }, 'Order creation attempt.');
 	sendResponse(
 		res,
 		201,
 		'success',
 		'Order successfully created',
-		await orderService.createOrder(firstName, lastName, address, city, country, products, total, userId),
+		await orderService.createOrder(firstName, lastName, address, city, country, products, userId),
 	);
 });
 

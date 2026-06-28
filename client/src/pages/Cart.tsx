@@ -32,7 +32,7 @@ function Cart() {
 
 	return (
 		<main className="cart">
-			<CartForm selectedProducts={selectedProducts} total={total} />
+			<CartForm selectedProducts={selectedProducts} />
 			<CartList selectedProducts={selectedProducts} total={total} />
 		</main>
 	);
