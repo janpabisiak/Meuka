@@ -1,15 +1,17 @@
 import { Response } from 'express';
+import * as orderService from '../services/orderService';
 import { IHttpRequest } from '../types/IHttpRequest';
+import { CreateBody } from '../types/IOrder';
 import { catchError } from '../utils/catchError';
 import sendResponse from '../utils/sendResponse';
-import * as orderService from '../services/orderService';
 
-const createOrder = catchError(async (req: IHttpRequest, res: Response): Promise<void> => {
-	const { firstName, lastName, address, city, country, products, total } = req.body;
-	const userId = req.userId!;
+export const createOrder = catchError(async (req: IHttpRequest, res: Response) => {
+	const body = req.body as CreateBody;
+	const { firstName, lastName, address, city, country, products, total } = body;
+	const userId = req.userId;
 
 	req.log.info({ firstName, lastName, address, city, country, products, total, userId }, 'Order creation attempt.');
-	return sendResponse(
+	sendResponse(
 		res,
 		201,
 		'success',
@@ -18,19 +20,17 @@ const createOrder = catchError(async (req: IHttpRequest, res: Response): Promise
 	);
 });
 
-const getOrders = catchError(async (req: IHttpRequest, res: Response): Promise<void> => {
-	const userId = req.userId!;
+export const getOrders = catchError(async (req: IHttpRequest, res: Response): Promise<void> => {
+	const userId = req.userId;
 
 	req.log.info({ userId }, 'Orders fetch attempt.');
-	return sendResponse(res, 200, 'success', 'Orders successfully fetched', await orderService.getOrders(userId));
+	sendResponse(res, 200, 'success', 'Orders successfully fetched', await orderService.getOrders(userId));
 });
 
-const getOrder = catchError(async (req: IHttpRequest, res: Response): Promise<void> => {
+export const getOrder = catchError(async (req: IHttpRequest, res: Response): Promise<void> => {
 	const { id: orderId } = req.params;
-	const userId = req.userId!;
+	const userId = req.userId;
 
 	req.log.info({ orderId, userId }, 'Order fetch attempt.');
-	return sendResponse(res, 200, 'success', 'Order successfully fetched.', await orderService.getOrderById(orderId, userId));
+	sendResponse(res, 200, 'success', 'Order successfully fetched.', await orderService.getOrderById(orderId, userId));
 });
-
-export { createOrder, getOrder, getOrders };

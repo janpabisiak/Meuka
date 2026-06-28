@@ -1,27 +1,28 @@
 import User from '../models/userSchema';
 import Order from '../models/orderSchema';
-import IOrder from '../types/IOrder';
-import capitalizeString from '../utils/capitalizeString';
 import { HttpError, HttpResponseStatuses, HttpResponseTypes } from '../utils/httpError';
+import { IOrder } from '../types/IOrder';
+import { IUser } from '../types/IUser';
+import { capitalizeString } from '../utils/capitalizeString';
 
-const getOrders = async (userId: string): Promise<IOrder[]> => {
-	const user = await User.findById(userId);
+export const getOrders = async (userId?: string): Promise<IOrder[]> => {
+	const user: IUser | null = await User.findById(userId);
 
 	if (!user) {
 		throw new HttpError(HttpResponseStatuses.NotFound, HttpResponseTypes.Failed, 'There is no user with provided id');
 	}
 
-	return await Order.find({ userID: user._id });
+	return await Order.find({ userID: user.id });
 };
 
-const getOrderById = async (id: string, userId: string): Promise<IOrder> => {
-	const user = await User.findById(userId);
+export const getOrderById = async (id: string, userId?: string): Promise<IOrder> => {
+	const user: IUser | null = await User.findById(userId);
 
 	if (!user) {
 		throw new HttpError(HttpResponseStatuses.NotFound, HttpResponseTypes.Failed, 'There is no user with provided id');
 	}
 
-	const order = await Order.findOne({ _id: id, userID: user._id });
+	const order: IOrder | null = await Order.findOne({ _id: id, userID: user.id });
 
 	if (!order) {
 		throw new HttpError(HttpResponseStatuses.NotFound, HttpResponseTypes.Failed, 'Order not found or does not belong to the user.');
@@ -30,7 +31,7 @@ const getOrderById = async (id: string, userId: string): Promise<IOrder> => {
 	return order;
 };
 
-const createOrder = async (
+export const createOrder = async (
 	firstName: string,
 	lastName: string,
 	address: string,
@@ -38,16 +39,16 @@ const createOrder = async (
 	country: string,
 	products: number[],
 	total: number,
-	userId: string,
+	userId?: string,
 ): Promise<IOrder> => {
-	const user = await User.findById(userId);
+	const user: IUser | null = await User.findById(userId);
 
 	if (!user) {
 		throw new HttpError(HttpResponseStatuses.NotFound, HttpResponseTypes.Failed, 'There is no user with provided id');
 	}
 
 	const newOrder = {
-		userID: user._id,
+		userID: user.id,
 		firstName: capitalizeString(firstName),
 		lastName: capitalizeString(lastName),
 		address: capitalizeString(address),
@@ -56,9 +57,7 @@ const createOrder = async (
 		products,
 		total,
 		date: new Date().toISOString(),
-	};
+	} as unknown as IOrder;
 
 	return await Order.create(newOrder);
 };
-
-export { getOrders, getOrderById, createOrder };

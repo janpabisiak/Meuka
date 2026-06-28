@@ -1,11 +1,12 @@
-interface IProduct {
+export interface IProduct {
+	id: string;
 	title: string;
 	price: number;
-	description: string;
+	description?: string;
 	category: string;
 	images: string[];
 	colors: string[];
 	sizes: string[];
 }
 
-export default IProduct;
+export type CreateBody = Pick<IProduct, 'price' | 'category' | 'description'> & { name: string };

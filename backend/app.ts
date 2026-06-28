@@ -7,14 +7,14 @@ import helmet from 'helmet';
 import hpp from 'hpp';
 import path from 'path';
 import { API_METHODS, API_RATE_LIMIT_REQUESTS, API_RATE_LIMIT_TIME, API_WHITELIST } from './config';
-import { IHttpRequest } from './types/IHttpRequest';
 import { authMiddleware } from './middlewares/authMiddleware';
+import { loggerMiddleware } from './middlewares/loggerMiddleware';
 import orderRoute from './routes/orderRoute';
 import productRoute from './routes/productRoute';
 import userRoute from './routes/userRoute';
 import { HttpError } from './utils/httpError';
 import sendResponse from './utils/sendResponse';
-import { loggerMiddleware } from './middlewares/loggerMiddleware';
+import { IHttpRequest } from './types/IHttpRequest';
 
 setServers(['1.1.1.1', '8.8.8.8']);
 
@@ -30,7 +30,7 @@ const corsOptions = {
 			callback(new Error('Not allowed by CORS'));
 		}
 	},
-	methods: API_METHODS.split(',')!,
+	methods: API_METHODS.split(','),
 };
 
 app.use(cors(corsOptions));
@@ -69,12 +69,15 @@ app.use('*', (_: IHttpRequest, res: Response) => {
 	res.status(404).json();
 });
 
-app.use((err: Error, req: IHttpRequest, res: Response, _: NextFunction) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((err: Error, req: IHttpRequest, res: Response, next: NextFunction) => {
 	if (err instanceof HttpError) {
+		// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 		return sendResponse(res, err.type, err.status, err.message);
 	}
 
 	req.log.error({ err }, 'An unexpected error happened.');
+	// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 	return sendResponse(res, 500, 'error', 'An unexpected error happened. Try again later');
 });
 

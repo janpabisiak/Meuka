@@ -3,7 +3,7 @@ import pino from 'pino';
 import { pinoHttp } from 'pino-http';
 import { IS_PRODUCTION } from '../config';
 
-const targets = [
+const targets: pino.TransportTargetOptions[] = [
 	{
 		target: 'pino-roll',
 		level: 'info',
@@ -23,7 +23,7 @@ if (!IS_PRODUCTION) {
 		options: {
 			colorize: true,
 			sync: true,
-		} as any,
+		},
 	});
 }
 

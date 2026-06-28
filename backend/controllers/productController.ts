@@ -2,26 +2,26 @@ import { Request, Response } from 'express';
 import { catchError } from '../utils/catchError';
 import sendResponse from '../utils/sendResponse';
 import * as productService from '../services/productService';
+import { CreateBody } from '../types/IProduct';
 
-const getProduct = catchError(async (req: Request, res: Response): Promise<void> => {
+export const getProduct = catchError(async (req: Request, res: Response): Promise<void> => {
 	const { id } = req.params;
 
 	req.log.info({ id }, 'Product fetch attempt.');
-	return sendResponse(res, 200, 'success', 'Product successfully fetched', await productService.getProductById(id));
+	sendResponse(res, 200, 'success', 'Product successfully fetched', await productService.getProductById(id));
 });
 
-const getProducts = catchError(async (req: Request, res: Response): Promise<void> => {
+export const getProducts = catchError(async (req: Request, res: Response): Promise<void> => {
 	const { category } = req.query;
 
 	req.log.info({ category }, 'Products fetch attempt.');
-	return sendResponse(res, 200, 'success', 'Products successfully fetched', await productService.getProducts(category as string));
+	sendResponse(res, 200, 'success', 'Products successfully fetched', await productService.getProducts(category as string));
 });
 
-const addProduct = catchError(async (req: Request, res: Response): Promise<void> => {
-	const newProduct = req.body;
+export const addProduct = catchError(async (req: Request, res: Response): Promise<void> => {
+	const body = req.body as CreateBody;
+	const { name, category, price, description } = body;
 
-	req.log.info({ newProduct }, 'Product creation attempt.');
-	return sendResponse(res, 201, 'success', 'Product successfully added', await productService.createProduct(newProduct));
+	req.log.info({ name, category, price, description }, 'Product creation attempt.');
+	sendResponse(res, 201, 'success', 'Product successfully added', await productService.createProduct(name, category, price, description));
 });
-
-export { addProduct, getProduct, getProducts };
