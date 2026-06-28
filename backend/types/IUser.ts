@@ -7,9 +7,11 @@ export interface IUser {
 	lastName: string;
 }
 
-export type RegisterBody = Omit<IUser, 'id'>;
+export type IUserDto = Omit<IUser, 'password'>;
 
-export type LoginBody = Pick<IUser, 'email' | 'password'>;
+export type RegisterBody = Omit<IUser, 'id'> & Required<Pick<IUser, 'password'>>;
+
+export type LoginBody = Required<Pick<IUser, 'email' | 'password'>>;
 
 export interface ChangePasswordBody {
 	currentPassword: string;

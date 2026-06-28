@@ -11,6 +11,6 @@ router.post('/register', userValidator.register, validationMiddleware, userContr
 router.post('/login', userValidator.login, validationMiddleware, userController.loginUser);
 router.patch('/change-password', authMiddleware, userValidator.changePassword, validationMiddleware, userController.changePassword);
 router.patch('/', authMiddleware, userValidator.update, validationMiddleware, userController.updateUser);
-router.delete('/:id', authMiddleware, userController.deleteUser);
+router.delete('/:id', authMiddleware, userValidator.deleteAccount, validationMiddleware, userController.deleteUser);
 
 export default router;

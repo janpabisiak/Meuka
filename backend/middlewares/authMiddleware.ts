@@ -14,8 +14,12 @@ export const authMiddleware = (req: IHttpRequest, res: Response, next: NextFunct
 	}
 
 	const token = authHeader.split(' ')[1];
-	const decodedToken = jwt.verify(token, JWT_SECRET_KEY) as ITokenPayload;
-
-	req.userId = decodedToken.userId;
-	next();
+	try {
+		const decodedToken = jwt.verify(token, JWT_SECRET_KEY) as ITokenPayload;
+		req.userId = decodedToken.userId;
+		next();
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	} catch (err: unknown) {
+		next(new HttpError(HttpResponseStatuses.NotAuthorized, HttpResponseTypes.Failed));
+	}
 };

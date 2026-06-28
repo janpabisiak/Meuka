@@ -1,5 +1,5 @@
 import { body } from 'express-validator';
-import { firstNameValidation, lastNameValidation } from './userValidator';
+import { firstNameValidation, idValidation, lastNameValidation } from './userValidator';
 
 export const create = [
 	firstNameValidation,
@@ -12,3 +12,5 @@ export const create = [
 	body('products.*.selectedColor').isString().notEmpty().trim().withMessage('Selected color is required'),
 	body('products.*.selectedSize').isString().notEmpty().trim().withMessage('Selected size is required'),
 ];
+
+export const get = idValidation;

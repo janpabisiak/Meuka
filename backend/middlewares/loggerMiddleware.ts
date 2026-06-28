@@ -40,8 +40,8 @@ export const logger = pino(
 export const loggerMiddleware = pinoHttp({
 	logger,
 	genReqId: (req, res) => {
-		const existingID = req.id ?? req.headers['x-request-id'];
-		const id = existingID ? (Array.isArray(existingID) ? existingID[0] : existingID) : crypto.randomUUID();
+		const headerValue = req.headers['x-request-id'];
+		const id = headerValue ? (Array.isArray(headerValue) ? headerValue[0] : headerValue) : crypto.randomUUID();
 		res.setHeader('X-Request-Id', id);
 		return id;
 	},

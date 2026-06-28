@@ -24,7 +24,7 @@ const userSchema = new Schema<IUser>(
 			unique: true,
 			validate: {
 				validator: function (v: string) {
-					return /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(v);
+					return /^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/.test(v);
 				},
 				message: (props: { value: string }) => `${props.value} is not a valid email!`,
 			},
@@ -33,6 +33,7 @@ const userSchema = new Schema<IUser>(
 			type: String,
 			required: [true, 'Password is required.'],
 			minLength: [8, 'Password must be at least 8 characters long.'],
+			select: false,
 		},
 		firstName: {
 			type: String,

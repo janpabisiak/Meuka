@@ -9,4 +9,6 @@ export interface IProduct {
 	sizes: string[];
 }
 
-export type CreateBody = Pick<IProduct, 'price' | 'category' | 'description'> & { name: string };
+export type IProductDto = IProduct;
+
+export type CreateBody = Pick<IProduct, 'price' | 'category' | 'description' | 'title'>;

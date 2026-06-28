@@ -1,5 +1,6 @@
 import { body, param } from 'express-validator';
 
+export const idValidation = [param('id').isMongoId().withMessage('Invalid ID format')];
 export const firstNameValidation = body('firstName').isString().notEmpty().trim().withMessage('First name is required');
 export const lastNameValidation = body('lastName').isString().notEmpty().trim().withMessage('Last name is required');
 export const emailValidation = body('email').isEmail().trim().withMessage('Invalid email address');
@@ -25,4 +26,4 @@ export const update = [
 	body('email').optional().isEmail().trim().withMessage('Invalid email address'),
 ];
 
-export const deleteAccount = [param('id').isMongoId().withMessage('Invalid user ID format')];
+export const deleteAccount = idValidation;

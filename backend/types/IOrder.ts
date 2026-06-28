@@ -13,7 +13,6 @@ export interface IOrder {
 	firstName: string;
 	lastName: string;
 	address: string;
-	postalCode: string;
 	city: string;
 	country: string;
 	products: (IProduct & IOrderProduct)[];
@@ -21,6 +20,8 @@ export interface IOrder {
 	date: string;
 }
 
-export type CreateBody = Omit<IOrder, 'id' | 'userID' | 'postalCode' | 'date' | 'total' | 'products'> & {
+export type IOrderDto = IOrder;
+
+export type CreateBody = Omit<IOrder, 'id' | 'userID' | 'date' | 'total' | 'products'> & {
 	products: IOrderProduct[];
 };

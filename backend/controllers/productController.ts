@@ -20,8 +20,14 @@ export const getProducts = catchError(async (req: Request, res: Response): Promi
 
 export const addProduct = catchError(async (req: Request, res: Response): Promise<void> => {
 	const body = req.body as CreateBody;
-	const { name, category, price, description } = body;
+	const { title, category, price, description } = body;
 
-	req.log.info({ name, category, price, description }, 'Product creation attempt.');
-	sendResponse(res, 201, 'success', 'Product successfully added', await productService.createProduct(name, category, price, description));
+	req.log.info({ title, category, price, description }, 'Product creation attempt.');
+	sendResponse(
+		res,
+		201,
+		'success',
+		'Product successfully added',
+		await productService.createProduct(title, category, price, description),
+	);
 });

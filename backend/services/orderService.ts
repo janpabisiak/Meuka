@@ -1,22 +1,24 @@
 import Order from '../models/orderSchema';
 import User from '../models/userSchema';
 import Product from '../models/productSchema';
-import { IOrder, IOrderProduct } from '../types/IOrder';
+import { IOrder, IOrderDto, IOrderProduct } from '../types/IOrder';
 import { IUser } from '../types/IUser';
 import { capitalizeString } from '../utils/capitalizeString';
 import { HttpError, HttpResponseStatuses, HttpResponseTypes } from '../utils/httpError';
 
-export const getOrders = async (userId?: string): Promise<IOrder[]> => {
+export const getOrders = async (userId?: string): Promise<IOrderDto[]> => {
 	const user: IUser | null = await User.findById(userId);
 
 	if (!user) {
 		throw new HttpError(HttpResponseStatuses.NotFound, HttpResponseTypes.Failed, 'There is no user with provided id');
 	}
 
-	return await Order.find({ userID: user.id });
+	const orders = await Order.find({ userID: user.id });
+
+	return orders.map((order) => toDto(order));
 };
 
-export const getOrderById = async (id: string, userId?: string): Promise<IOrder> => {
+export const getOrderById = async (id: string, userId?: string): Promise<IOrderDto> => {
 	const user: IUser | null = await User.findById(userId);
 
 	if (!user) {
@@ -29,7 +31,7 @@ export const getOrderById = async (id: string, userId?: string): Promise<IOrder>
 		throw new HttpError(HttpResponseStatuses.NotFound, HttpResponseTypes.Failed, 'Order not found or does not belong to the user.');
 	}
 
-	return order;
+	return toDto(order);
 };
 
 export const createOrder = async (
@@ -40,7 +42,7 @@ export const createOrder = async (
 	country: string,
 	products: IOrderProduct[],
 	userId?: string,
-): Promise<IOrder> => {
+): Promise<IOrderDto> => {
 	const user: IUser | null = await User.findById(userId);
 
 	if (!user) {
@@ -82,5 +84,10 @@ export const createOrder = async (
 		date: new Date().toISOString(),
 	} as unknown as IOrder;
 
-	return await Order.create(newOrder);
+	const order = await Order.create(newOrder);
+	return toDto(order);
+};
+
+const toDto = (order: IOrder): IOrderDto => {
+	return order;
 };

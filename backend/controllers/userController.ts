@@ -16,7 +16,7 @@ export const createUser = catchError(async (req: IHttpRequest, res: Response): P
 	const body = req.body as RegisterBody;
 	const { username, email, password, firstName, lastName } = body;
 
-	req.log.info({ username, email, password, firstName, lastName }, 'User creation attempt.');
+	req.log.info({ username, email, firstName, lastName }, 'User creation attempt.');
 	const { user, token } = await userService.createUser(username, email, password, firstName, lastName);
 	sendResponse(res, 201, 'success', 'User successfully created', user, token);
 });
@@ -25,7 +25,7 @@ export const loginUser = catchError(async (req: IHttpRequest, res: Response): Pr
 	const body = req.body as LoginBody;
 	const { email, password } = body;
 
-	req.log.info({ email, password }, 'User login attempt.');
+	req.log.info({ email }, 'User login attempt.');
 	const { user, token } = await userService.loginUser(email, password);
 	sendResponse(res, 200, 'success', 'User successfully logged in', user, token);
 });
@@ -35,7 +35,7 @@ export const changePassword = catchError(async (req: IHttpRequest, res: Response
 	const { currentPassword, newPassword } = body;
 	const userId = req.userId;
 
-	req.log.info({ currentPassword, newPassword, userId }, 'Password change attempt.');
+	req.log.info({ userId }, 'Password change attempt.');
 	sendResponse(
 		res,
 		201,
