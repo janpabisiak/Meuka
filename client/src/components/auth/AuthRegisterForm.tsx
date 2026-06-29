@@ -58,13 +58,19 @@ function AuthRegisterForm() {
 					className="input"
 					type="text"
 					placeholder="First name"
-					{...register('firstName', { required: 'First name is required' })}
+					{...register('firstName', {
+						required: 'First name is required',
+						maxLength: { value: 50, message: 'First name must be less than 50 characters long.' },
+					})}
 				/>
 				<input
 					className="input"
 					type="text"
 					placeholder="Last name"
-					{...register('lastName', { required: 'Last name is required' })}
+					{...register('lastName', {
+						required: 'Last name is required',
+						maxLength: { value: 50, message: 'Last name must be less than 50 characters long.' },
+					})}
 				/>
 			</div>
 			<input
@@ -73,7 +79,8 @@ function AuthRegisterForm() {
 				placeholder="Username"
 				{...register('username', {
 					required: 'Username is required',
-					minLength: { value: 6, message: 'Username should be at least 6 chars long.' },
+					minLength: { value: 6, message: 'Username must be between 6 and 16 characters long.' },
+					maxLength: { value: 16, message: 'Username must be between 6 and 16 characters long.' },
 				})}
 			/>
 			<input
@@ -83,7 +90,7 @@ function AuthRegisterForm() {
 				{...register('email', {
 					required: 'Email address is required',
 					validate: {
-						isValidEmail: (value) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value) || 'Email is not valid',
+						isValidEmail: (value) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value) || 'Email is not valid',
 					},
 				})}
 			/>
@@ -95,7 +102,7 @@ function AuthRegisterForm() {
 					{...register('password', {
 						required: 'Password is required',
 						validate: {
-							minLength: (value) => value.length >= 8 || 'Password should has more than 8 characters',
+							minLength: (value) => value.length >= 8 || 'Password must be at least 8 characters long.',
 							isCapitalLetter: (value) => /[A-Z]/.test(value) || 'Password should has at least one capital letter',
 							isLowerCaseLetter: (value) => /[a-z]/.test(value) || 'Password should has at least one lower case letter',
 							isContainNumber: (value) => /\d/.test(value) || 'Password should has at least one number',

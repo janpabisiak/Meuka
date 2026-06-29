@@ -81,7 +81,6 @@ export const createOrder = async (
 		country: capitalizeString(country),
 		products: finalProducts,
 		total,
-		date: new Date().toISOString(),
 	} as unknown as IOrder;
 
 	const order = await Order.create(newOrder);

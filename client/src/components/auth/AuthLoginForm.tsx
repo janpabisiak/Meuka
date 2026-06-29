@@ -49,7 +49,7 @@ function AuthLoginForm() {
 				{...register('email', {
 					required: 'Email address is required',
 					validate: {
-						isValidEmail: (value) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value) || 'Email is not valid',
+						isValidEmail: (value) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value) || 'Email is not valid',
 					},
 				})}
 			/>

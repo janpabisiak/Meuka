@@ -72,17 +72,47 @@ function CartForm({ selectedProducts }: Props) {
 					className="input"
 					type="text"
 					placeholder="First name"
-					{...register('firstName', { required: 'First name is required' })}
+					{...register('firstName', {
+						required: 'First name is required',
+						maxLength: { value: 50, message: 'First name must be less than 50 characters long.' },
+					})}
 				/>
 				<input
 					className="input"
 					type="text"
 					placeholder="Last name"
-					{...register('lastName', { required: 'Last name is required' })}
+					{...register('lastName', {
+						required: 'Last name is required',
+						maxLength: { value: 50, message: 'Last name must be less than 50 characters long.' },
+					})}
 				/>
-				<input className="input" type="text" placeholder="Address" {...register('address', { required: 'Address is required' })} />
-				<input className="input" type="text" placeholder="City" {...register('city', { required: 'City is required' })} />
-				<input className="input" type="text" placeholder="Country" {...register('country', { required: 'Country is required' })} />
+				<input
+					className="input"
+					type="text"
+					placeholder="Address"
+					{...register('address', {
+						required: 'Address is required',
+						maxLength: { value: 150, message: 'Address must be less than 150 characters long.' },
+					})}
+				/>
+				<input
+					className="input"
+					type="text"
+					placeholder="City"
+					{...register('city', {
+						required: 'City is required',
+						maxLength: { value: 50, message: 'City must be less than 50 characters long.' },
+					})}
+				/>
+				<input
+					className="input"
+					type="text"
+					placeholder="Country"
+					{...register('country', {
+						required: 'Country is required',
+						maxLength: { value: 60, message: 'Country must be less than 60 characters long.' },
+					})}
+				/>
 				<Button text="Order" type="submit" />
 				<Button text="Clear cart" isPrimary={false} onClick={() => dispatch({ type: 'cart/reset' })} />
 			</form>

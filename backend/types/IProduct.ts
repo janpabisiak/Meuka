@@ -11,4 +11,4 @@ export interface IProduct {
 
 export type IProductDto = IProduct;
 
-export type CreateBody = Pick<IProduct, 'price' | 'category' | 'description' | 'title'>;
+export type CreateBody = Pick<IProduct, 'price' | 'category' | 'description' | 'title' | 'images' | 'colors' | 'sizes'>;

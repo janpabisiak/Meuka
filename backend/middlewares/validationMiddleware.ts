@@ -8,7 +8,7 @@ export function validationMiddleware(req: IHttpRequest, res: Response, next: Nex
 
 	if (!errors.isEmpty()) {
 		const firstError = errors.array()[0];
-		throw new HttpError(HttpResponseStatuses.BadRequest, HttpResponseTypes.Failed, firstError.msg as string);
+		next(new HttpError(HttpResponseStatuses.BadRequest, HttpResponseTypes.Failed, firstError.msg as string));
 	}
 
 	next();

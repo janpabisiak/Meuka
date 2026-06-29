@@ -28,8 +28,11 @@ export const createProduct = async (
 	category: string,
 	price: number,
 	description?: string,
+	images?: string[],
+	colors?: string[],
+	sizes?: string[],
 ): Promise<IProductDto> => {
-	const product = await Product.create({ title, category, price, description });
+	const product = await Product.create({ title, category, price, description, images, colors, sizes });
 	return toDto(product);
 };
 

@@ -63,7 +63,7 @@ function SettingsPasswordForm() {
 				{...register('newPassword', {
 					required: 'New password is required',
 					validate: {
-						minLength: (value) => value.length >= 8 || 'Password should has more than 8 characters',
+						minLength: (value) => value.length >= 8 || 'New password must be at least 8 characters long.',
 						isCapitalLetter: (value) => /[A-Z]/.test(value) || 'Password should has at least one capital letter',
 						isLowerCaseLetter: (value) => /[a-z]/.test(value) || 'Password should has at least one lower case letter',
 						isContainNumber: (value) => /\d/.test(value) || 'Password should has at least one number',
