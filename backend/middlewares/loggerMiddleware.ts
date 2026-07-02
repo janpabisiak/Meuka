@@ -1,20 +1,24 @@
 import crypto from 'crypto';
 import pino from 'pino';
 import { pinoHttp } from 'pino-http';
-import { IS_PRODUCTION } from '../config';
+import { IS_PRODUCTION, LOG_LEVEL, LOG_TO_FILE } from '../config';
 
-const targets: pino.TransportTargetOptions[] = [
-	{
-		target: 'pino-roll',
-		level: 'info',
-		options: { file: './logs/info.log', frequency: 'daily', mkdir: true, limit: { count: 15 }, dateFormat: 'dd-MM-yyyy' },
-	},
-	{
-		target: 'pino-roll',
-		level: 'error',
-		options: { file: './logs/error.log', frequency: 'daily', mkdir: true, limit: { count: 15 }, dateFormat: 'dd-MM-yyyy' },
-	},
-];
+const targets: pino.TransportTargetOptions[] = [];
+
+if (LOG_TO_FILE) {
+	targets.push(
+		{
+			target: 'pino-roll',
+			level: 'info',
+			options: { file: './logs/info.log', frequency: 'daily', mkdir: true, limit: { count: 15 }, dateFormat: 'dd-MM-yyyy' },
+		},
+		{
+			target: 'pino-roll',
+			level: 'error',
+			options: { file: './logs/error.log', frequency: 'daily', mkdir: true, limit: { count: 15 }, dateFormat: 'dd-MM-yyyy' },
+		},
+	);
+}
 
 if (!IS_PRODUCTION) {
 	targets.push({
@@ -27,11 +31,11 @@ if (!IS_PRODUCTION) {
 	});
 }
 
-const transports = pino.transport({ targets });
+const transports = targets.length > 0 ? pino.transport({ targets }) : undefined;
 
 export const logger = pino(
 	{
-		level: IS_PRODUCTION ? 'info' : 'debug',
+		level: LOG_LEVEL,
 		timestamp: pino.stdTimeFunctions.isoTime,
 	},
 	transports,

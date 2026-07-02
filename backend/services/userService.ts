@@ -1,4 +1,4 @@
-import { BCRYPT_ROUNDS, JWT_SECRET_KEY } from '../config';
+import { BCRYPT_ROUNDS, JWT_EXPIRES_IN, JWT_SECRET_KEY } from '../config';
 import User from '../models/userSchema';
 import { IUser, IUserDto } from '../types/IUser';
 import { HttpError, HttpResponseStatuses, HttpResponseTypes } from '../utils/httpError';
@@ -105,7 +105,7 @@ const createToken = (userId: string): string => {
 			userId,
 		},
 		JWT_SECRET_KEY,
-		{ expiresIn: '7d' },
+		{ expiresIn: JWT_EXPIRES_IN },
 	);
 };
 

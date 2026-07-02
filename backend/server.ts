@@ -8,9 +8,9 @@ const DB = DATABASE_URL.replace('<PASSWORD>', DATABASE_PASSWORD);
 mongoose
 	.connect(DB)
 	.then(() => {
-		console.log('Successfully connected to database.');
+		logger.info('Successfully connected to database.');
 		app.listen(API_PORT, () => {
-			console.log(`Listening on port ${String(API_PORT)}...`);
+			logger.info(`Listening on port ${String(API_PORT)}...`);
 		});
 	})
 	.catch((err: unknown) => {
