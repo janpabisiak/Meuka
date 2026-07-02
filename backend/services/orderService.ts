@@ -63,6 +63,22 @@ export const createOrder = async (
 			throw new HttpError(HttpResponseStatuses.NotFound, HttpResponseTypes.Failed, `Product with ID ${productInput.id} not found`);
 		}
 
+		if (!dbProduct.colors.includes(productInput.selectedColor)) {
+			throw new HttpError(
+				HttpResponseStatuses.BadRequest,
+				HttpResponseTypes.Failed,
+				`Color ${productInput.selectedColor} is not available for this product`,
+			);
+		}
+
+		if (!dbProduct.sizes.includes(productInput.selectedSize)) {
+			throw new HttpError(
+				HttpResponseStatuses.BadRequest,
+				HttpResponseTypes.Failed,
+				`Size ${productInput.selectedSize} is not available for this product`,
+			);
+		}
+
 		total += dbProduct.price;
 
 		return {
