@@ -1,85 +1,36 @@
-import 'dotenv/config';
-import { Request, Response } from 'express';
-import User from '../models/userSchema';
-import Order from '../models/orderSchema';
+import { Response } from 'express';
+import * as orderService from '../services/orderService';
+import { IHttpRequest } from '../types/IHttpRequest';
+import { CreateBody } from '../types/IOrder';
+import { catchError } from '../utils/catchError';
 import sendResponse from '../utils/sendResponse';
-import handleValidationErrors from '../utils/handleValidationErrors';
-import verifyToken from '../utils/verifyToken';
-import capitalizeString from '../utils/capitalizeString';
 
-// Function to create a new order
-const createOrder = async (req: Request, res: Response) => {
-	try {
-		// Check for validation errors
-		if (!handleValidationErrors(req, res)) return;
+export const createOrder = catchError(async (req: IHttpRequest, res: Response) => {
+	const body = req.body as CreateBody;
+	const { firstName, lastName, address, city, country, products } = body;
+	const userId = req.userId;
 
-		const payload = verifyToken(req, res);
-		if (!payload) return;
+	req.log.info({ firstName, lastName, address, city, country, products, userId }, 'Order creation attempt.');
+	sendResponse(
+		res,
+		201,
+		'success',
+		'Order successfully created',
+		await orderService.createOrder(firstName, lastName, address, city, country, products, userId),
+	);
+});
 
-		// Check if user exists
-		const user = await User.findOne({ username: payload.username });
+export const getOrders = catchError(async (req: IHttpRequest, res: Response): Promise<void> => {
+	const userId = req.userId;
 
-		if (!user) return sendResponse(res, 404, 'failed', 'There is no user with provided id');
+	req.log.info({ userId }, 'Orders fetch attempt.');
+	sendResponse(res, 200, 'success', 'Orders successfully fetched', await orderService.getOrders(userId));
+});
 
-		// Destructure the request body to get user input
-		const { firstName, lastName, address, city, country, products, total } = req.body;
+export const getOrder = catchError(async (req: IHttpRequest, res: Response): Promise<void> => {
+	const { id: orderId } = req.params;
+	const userId = req.userId;
 
-		const newOrder = {
-			userID: user._id,
-			firstName: capitalizeString(firstName),
-			lastName: capitalizeString(lastName),
-			address: capitalizeString(address),
-			city: capitalizeString(city),
-			country: capitalizeString(country),
-			products,
-			total,
-			date: new Date().toISOString(),
-		};
-
-		await Order.create(newOrder);
-		return sendResponse(res, 201, 'success', 'Order successfully created');
-	} catch (err) {
-		console.log(err);
-		return sendResponse(res, 500, 'error', 'An unexpected error happened. Try again later');
-	}
-};
-
-const getOrders = async (req: Request, res: Response) => {
-	try {
-		const payload = verifyToken(req, res);
-		if (!payload) return;
-
-		const user = await User.findOne({ username: payload.username });
-
-		if (!user) return sendResponse(res, 404, 'failed', 'There is no user with provided. id');
-
-		const orders = await Order.find({ userID: user.id });
-		return sendResponse(res, 200, 'success', 'Orders successfully fetched', orders);
-	} catch (err) {
-		console.log(err);
-		return sendResponse(res, 500, 'error', 'An unexpected error happened. Try again later');
-	}
-};
-
-const getOrder = async (req: Request, res: Response) => {
-	try {
-		const payload = verifyToken(req, res);
-		if (!payload) return;
-
-		const user = await User.findOne({ username: payload.username });
-
-		if (!user) return sendResponse(res, 404, 'failed', 'User not found');
-
-		const { id: orderId } = req.params;
-		const order = await Order.findOne({ _id: orderId, userID: user.id });
-
-		if (!order) return sendResponse(res, 404, 'failed', 'Order not found or does not belong to the user.');
-
-		return sendResponse(res, 200, 'success', 'Order successfully fetched.', order);
-	} catch (err) {
-		console.log(err);
-		return sendResponse(res, 500, 'error', 'An unexpected error happened. Try again later');
-	}
-};
-
-export { createOrder, getOrders, getOrder };
+	req.log.info({ orderId, userId }, 'Order fetch attempt.');
+	sendResponse(res, 200, 'success', 'Order successfully fetched.', await orderService.getOrderById(orderId, userId));
+});

@@ -1,54 +1,61 @@
-import express, { Express } from 'express';
-import bodyParser from 'body-parser';
-import morgan from 'morgan';
+import compression from 'compression';
 import cors from 'cors';
-import hpp from 'hpp';
-import helmet from 'helmet';
-import { rateLimit } from 'express-rate-limit';
-import userRoute from './routes/userRoute';
-import productRoute from './routes/productRoute';
-import orderRoute from './routes/orderRoute';
-import path from 'path';
 import { setServers } from 'dns/promises';
+import express, { Express, NextFunction, Response } from 'express';
+import { rateLimit } from 'express-rate-limit';
+import helmet from 'helmet';
+import hpp from 'hpp';
+import path from 'path';
+import { API_METHODS, API_RATE_LIMIT_REQUESTS, API_RATE_LIMIT_TIME, API_WHITELIST, DNS_SERVERS } from './config';
+import { authMiddleware } from './middlewares/authMiddleware';
+import { logger, loggerMiddleware } from './middlewares/loggerMiddleware';
+import orderRoute from './routes/orderRoute';
+import productRoute from './routes/productRoute';
+import userRoute from './routes/userRoute';
+import { HttpError, HttpResponseStatuses, HttpResponseTypes } from './utils/httpError';
+import sendResponse from './utils/sendResponse';
+import { IHttpRequest } from './types/IHttpRequest';
 
-setServers(['1.1.1.1', '8.8.8.8']);
+setServers(DNS_SERVERS);
 
 const app: Express = express();
 
 app.set('trust proxy', 1);
 
-const whitelist = process.env.API_WHITELIST?.split(',')!;
-
-// CORS configuration
 const corsOptions = {
 	origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-		if (!origin || whitelist.includes(origin)) {
+		if (!origin || API_WHITELIST.includes(origin)) {
 			callback(null, true);
 		} else {
-			callback(new Error('Not allowed by CORS'));
+			callback(new HttpError(HttpResponseStatuses.AccessDenied, HttpResponseTypes.Failed, 'Not allowed by CORS'));
 		}
 	},
-	methods: process.env.API_METHODS?.split(',')!,
+	methods: API_METHODS,
 };
 
 app.use(cors(corsOptions));
 
-// Rate limiting configuration
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 const limiter = rateLimit({
-	windowMs: +process.env.API_RATE_LIMIT_TIME! * 1000,
-	limit: +process.env.API_RATE_LIMIT_REQUESTS!,
+	windowMs: API_RATE_LIMIT_TIME * 1000,
+	limit: API_RATE_LIMIT_REQUESTS,
 	standardHeaders: 'draft-7',
 	legacyHeaders: false,
 });
-
 app.use(limiter);
-app.use(morgan('dev')); // Logging
-app.use(helmet()); // Security headers
-app.use(hpp()); // HTTP Parameter Pollution protection
-app.use(bodyParser.json()); // JSON body parser
+
+app.use(loggerMiddleware);
+
+app.use(helmet());
+app.use(hpp());
+
+app.use(compression());
 
 app.use('/api/users', userRoute);
 app.use('/api/products', productRoute);
+app.use('/api/orders', authMiddleware, orderRoute);
 app.use(
 	'/data',
 	express.static(path.resolve(__dirname, 'data'), {
@@ -57,12 +64,21 @@ app.use(
 		},
 	}),
 );
-app.use('/api/orders', orderRoute);
-app.use(function (req, res) {
-	res.status(404).json({
-		status: 'error',
-		message: 'Error 404: Not found',
-	});
+
+app.use('*', (_: IHttpRequest, res: Response) => {
+	res.status(404).json();
+});
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((err: Error, req: IHttpRequest, res: Response, next: NextFunction) => {
+	if (err instanceof HttpError) {
+		// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
+		return sendResponse(res, err.type, err.status, err.message);
+	}
+
+	logger.error({ err }, 'An unexpected error happened.');
+	// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
+	return sendResponse(res, 500, 'error', 'An unexpected error happened. Try again later');
 });
 
 export default app;

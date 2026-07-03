@@ -1,156 +1,64 @@
-import 'dotenv/config';
-import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-import User from '../models/userSchema';
+import { Response } from 'express';
+import * as userService from '../services/userService';
+import { catchError } from '../utils/catchError';
 import sendResponse from '../utils/sendResponse';
-import verifyToken from '../utils/verifyToken';
-import handleValidationErrors from '../utils/handleValidationErrors';
-import compareHashes from '../utils/compareHashes';
-import hashPassword from '../utils/hashPassword';
-import capitalizeString from '../utils/capitalizeString';
+import { ChangePasswordBody, LoginBody, RegisterBody, UpdateBody } from '../types/IUser';
+import { IHttpRequest } from '../types/IHttpRequest';
 
-const getUser = async (req: Request, res: Response) => {
-	try {
-		// Verify JWT token
-		const payload = verifyToken(req, res);
-		if (!payload) return;
+export const getUser = catchError(async (req: IHttpRequest, res: Response): Promise<void> => {
+	const userId = req.userId;
 
-		const user = await User.findOne({ username: payload.username }).select('-__v -password');
+	req.log.info({ userId }, 'User fetch attempt.');
+	sendResponse(res, 200, 'success', 'User successfully fetched', await userService.getUserById(userId));
+});
 
-		if (!user) return sendResponse(res, 404, 'failed', 'There is no user with this id');
+export const createUser = catchError(async (req: IHttpRequest, res: Response): Promise<void> => {
+	const body = req.body as RegisterBody;
+	const { username, email, password, firstName, lastName } = body;
 
-		return sendResponse(res, 200, 'success', 'User successfully fetched', user);
-	} catch (err) {
-		console.log(err);
-		return sendResponse(res, 500, 'error', 'An unexpected error happened. Try again later');
-	}
-};
+	req.log.info({ username, email, firstName, lastName }, 'User creation attempt.');
+	const { user, token } = await userService.createUser(username, email, password, firstName, lastName);
+	sendResponse(res, 201, 'success', 'User successfully created', user, token);
+});
 
-const createUser = async (req: Request, res: Response) => {
-	try {
-		if (!handleValidationErrors(req, res)) return;
+export const loginUser = catchError(async (req: IHttpRequest, res: Response): Promise<void> => {
+	const body = req.body as LoginBody;
+	const { email, password } = body;
 
-		const { username, email, password, firstName, lastName } = req.body;
-		const existingUser = await User.findOne({ $or: [{ username }, { email }] }).select('-__v -password');
+	req.log.info({ email }, 'User login attempt.');
+	const { user, token } = await userService.loginUser(email, password);
+	sendResponse(res, 200, 'success', 'User successfully logged in', user, token);
+});
 
-		if (existingUser) return sendResponse(res, 400, 'failed', 'There is already user with entered username or e-mail address');
+export const changePassword = catchError(async (req: IHttpRequest, res: Response): Promise<void> => {
+	const body = req.body as ChangePasswordBody;
+	const { currentPassword, newPassword } = body;
+	const userId = req.userId;
 
-		const newUser = {
-			username,
-			email,
-			password: await hashPassword(password),
-			firstName: capitalizeString(firstName),
-			lastName: capitalizeString(lastName),
-		};
+	req.log.info({ userId }, 'Password change attempt.');
+	sendResponse(
+		res,
+		201,
+		'success',
+		'Password successfully changed',
+		await userService.changePassword(currentPassword, newPassword, userId),
+	);
+});
 
-		await User.create(newUser);
+export const updateUser = catchError(async (req: IHttpRequest, res: Response): Promise<void> => {
+	const body = req.body as UpdateBody;
+	const { firstName, lastName, email } = body;
+	const userId = req.userId;
 
-		const token = jwt.sign(
-			{
-				username: newUser.username,
-			},
-			process.env.JWT_SECRET_KEY!,
-			{ expiresIn: '7d' }
-		);
+	req.log.info({ firstName, lastName, email, userId }, 'User update attempt.');
+	sendResponse(res, 201, 'success', 'User successfully updated', await userService.updateUser(firstName, lastName, email, userId));
+});
 
-		return sendResponse(res, 201, 'success', 'User successfully created', newUser, token);
-	} catch (err) {
-		console.log(err);
-		return sendResponse(res, 500, 'error', 'An unexpected error happened. Try again later');
-	}
-};
+export const deleteUser = catchError(async (req: IHttpRequest, res: Response): Promise<void> => {
+	const { id } = req.params;
+	const userId = req.userId;
 
-const loginUser = async (req: Request, res: Response) => {
-	try {
-		if (!handleValidationErrors(req, res)) return;
-
-		const { email, password } = req.body;
-		const user = await User.findOne({ email }).select('-__v');
-
-		if (!user) return sendResponse(res, 403, 'failed', 'E-mail or password is incorrect');
-
-		if (!(await compareHashes(password, user.password))) return sendResponse(res, 403, 'failed', 'E-mail or password is incorrect');
-
-		const token = jwt.sign(
-			{
-				username: user.username,
-			},
-			process.env.JWT_SECRET_KEY!,
-			{ expiresIn: '7d' }
-		);
-
-		return sendResponse(res, 200, 'success', 'User successfully logged in', user, token);
-	} catch (err) {
-		return sendResponse(res, 500, 'error', (err as Error).message);
-	}
-};
-
-const changePassword = async (req: Request, res: Response) => {
-	try {
-		if (!handleValidationErrors(req, res)) return;
-
-		const payload = verifyToken(req, res);
-		if (!payload) return;
-
-		const { currentPassword, newPassword } = req.body;
-		const user = await User.findOne({ username: payload.username }).select('-__v');
-
-		if (!user) return sendResponse(res, 404, 'failed', 'There is no user with this id');
-
-		if (!(await compareHashes(currentPassword, user.password)))
-			return sendResponse(res, 403, 'failed', 'Provided password is not correct');
-
-		await User.findOneAndUpdate({ username: payload.username }, { password: await hashPassword(newPassword) });
-
-		return sendResponse(res, 201, 'success', 'Password successfully changed');
-	} catch (err) {
-		console.log(err);
-		return sendResponse(res, 500, 'error', 'An unexpected error happened. Try again later');
-	}
-};
-
-const updateUser = async (req: Request, res: Response) => {
-	try {
-		if (!handleValidationErrors(req, res)) return;
-
-		const payload = verifyToken(req, res);
-		if (!payload) return;
-
-		const { firstName, lastName, email } = req.body;
-		const user = await User.findOne({ username: payload.username }).select('-__v -password');
-
-		if (!user) return sendResponse(res, 404, 'failed', 'There is no user with this id');
-
-		await User.findOneAndUpdate(
-			{ username: payload.username },
-			{
-				firstName: capitalizeString(firstName),
-				lastName: capitalizeString(lastName),
-				email,
-			}
-		);
-
-		return sendResponse(res, 201, 'success', 'Use successfully updated');
-	} catch (err) {
-		console.log(err);
-		return sendResponse(res, 500, 'error', 'An unexpected error happened. Try again later');
-	}
-};
-
-const deleteUser = async (req: Request, res: Response) => {
-	try {
-		if (!handleValidationErrors(req, res)) return;
-
-		const { id } = req.params;
-		const user = await User.findByIdAndDelete({ id });
-
-		if (!user) return sendResponse(res, 404, 'failed', 'There is no user with this id');
-
-		return sendResponse(res, 201, 'success', 'User successfully deleted');
-	} catch (err) {
-		console.log(err);
-		return sendResponse(res, 500, 'error', 'An unexpected error happened. Try again later');
-	}
-};
-
-export { getUser, createUser, loginUser, changePassword, updateUser, deleteUser };
+	req.log.info({ id, userId }, 'User deletion attempt.');
+	await userService.deleteUser(id, userId);
+	sendResponse(res, 204, 'success', 'User successfully deleted');
+});

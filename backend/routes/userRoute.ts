@@ -1,14 +1,16 @@
-import express, { Router } from 'express';
+import express from 'express';
 import * as userController from '../controllers/userController';
+import { authMiddleware } from '../middlewares/authMiddleware';
+import { validationMiddleware } from '../middlewares/validationMiddleware';
 import * as userValidator from '../validators/userValidator';
 
-const router: Router = express.Router();
+const router = express.Router();
 
-router.get('/', userController.getUser);
-router.post('/register', userValidator.register, userController.createUser);
-router.post('/login', userValidator.login, userController.loginUser);
-router.patch('/change-password', userValidator.changePassword, userController.changePassword);
-router.patch('/', userValidator.update, userController.updateUser);
-router.delete('/:id', userController.deleteUser);
+router.get('/', authMiddleware, userController.getUser);
+router.post('/register', userValidator.register, validationMiddleware, userController.createUser);
+router.post('/login', userValidator.login, validationMiddleware, userController.loginUser);
+router.patch('/change-password', authMiddleware, userValidator.changePassword, validationMiddleware, userController.changePassword);
+router.patch('/', authMiddleware, userValidator.update, validationMiddleware, userController.updateUser);
+router.delete('/:id', authMiddleware, userValidator.deleteAccount, validationMiddleware, userController.deleteUser);
 
 export default router;

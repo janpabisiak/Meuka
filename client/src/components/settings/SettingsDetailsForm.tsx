@@ -68,9 +68,20 @@ function SettingsDetailsForm() {
 				className="input"
 				type="text"
 				placeholder="First name"
-				{...register('firstName', { required: 'First name is required' })}
+				{...register('firstName', {
+					required: 'First name is required',
+					maxLength: { value: 50, message: 'First name must be less than 50 characters long.' },
+				})}
 			/>
-			<input className="input" type="text" placeholder="Last name" {...register('lastName', { required: 'Last name is required' })} />
+			<input
+				className="input"
+				type="text"
+				placeholder="Last name"
+				{...register('lastName', {
+					required: 'Last name is required',
+					maxLength: { value: 50, message: 'Last name must be less than 50 characters long.' },
+				})}
+			/>
 			<input
 				className="input"
 				type="email"
@@ -78,7 +89,7 @@ function SettingsDetailsForm() {
 				{...register('email', {
 					required: 'Email address is required',
 					validate: {
-						isValidEmail: (value) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value) || 'Email is not valid',
+						isValidEmail: (value) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value) || 'Email is not valid',
 					},
 				})}
 			/>

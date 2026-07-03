@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import IUser from '../interfaces/IUser';
+import { IUser } from '../types/IUser';
 
 const { Schema } = mongoose;
 
@@ -12,10 +12,10 @@ const userSchema = new Schema<IUser>(
 			minLength: [6, 'Username must be at least 6 characters long.'],
 			maxLength: [16, 'Username must be less than 16 characters long.'],
 			validate: {
-				validator: function (v) {
+				validator: function (v: string) {
 					return /^[a-zA-Z0-9]+$/.test(v);
 				},
-				message: (props) => `${props.value} is not a valid username! Alphanumeric characters only.`,
+				message: (props: { value: string }) => `${props.value} is not a valid username! Alphanumeric characters only.`,
 			},
 		},
 		email: {
@@ -23,27 +23,30 @@ const userSchema = new Schema<IUser>(
 			required: [true, 'E-mail address is required.'],
 			unique: true,
 			validate: {
-				validator: function (v) {
-					return /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(v);
+				validator: function (v: string) {
+					return /^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/.test(v);
 				},
-				message: (props) => `${props.value} is not a valid email!`,
+				message: (props: { value: string }) => `${props.value} is not a valid email!`,
 			},
 		},
 		password: {
 			type: String,
 			required: [true, 'Password is required.'],
 			minLength: [8, 'Password must be at least 8 characters long.'],
+			select: false,
 		},
 		firstName: {
 			type: String,
 			required: [true, 'First name is required.'],
+			maxLength: [50, 'First name must be less than 50 characters long.'],
 		},
 		lastName: {
 			type: String,
 			required: [true, 'Last name is required.'],
+			maxLength: [50, 'Last name must be less than 50 characters long.'],
 		},
 	},
-	{ timestamps: true }
+	{ timestamps: true },
 );
 
 export default mongoose.model<IUser>('User', userSchema, 'users');
