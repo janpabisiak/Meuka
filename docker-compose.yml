@@ -1,0 +1,32 @@
+services:
+    client:
+        build: ./client
+        restart: always
+        ports:
+            - '80:80'
+        env_file:
+            - ./client/.env
+    api:
+        build: ./backend
+        restart: always
+        ports:
+            - '3001:3001'
+        env_file:
+            - ./backend/.env
+        environment:
+            DATABASE_URL: mongodb://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@db:27017/ecommerce?authSource=admin
+            DATABASE_PASSWORD: ''
+        depends_on:
+            - db
+    db:
+        image: mongo:8
+        restart: always
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: ${DATABASE_USERNAME}
+            MONGO_INITDB_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+        volumes:
+            - database_data:/data/db
+            - ./seeder.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+volumes:
+    database_data:
