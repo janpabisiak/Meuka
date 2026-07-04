@@ -10,21 +10,17 @@ import NavbarCart from '../components/navbar/NavbarCart';
 import NavbarUser from '../components/navbar/NavbarUser';
 import Loader from '../components/ui/Loader';
 import { useUser } from '../contexts/userContext';
-import { useProduct } from '../contexts/productContext';
 
 function RootLayout() {
 	const {
 		state: { isLoading: isLoadingUser },
 	} = useUser();
-	const {
-		state: { isLoading: isLoadingItems },
-	} = useProduct();
 	const { pathname } = useLocation();
 
 	return (
 		<>
-			{(isLoadingUser || isLoadingItems) && <Loader />}
-			{!isLoadingUser && !isLoadingItems && (
+			{isLoadingUser && <Loader />}
+			{!isLoadingUser && (
 				<>
 					<Header>
 						<Navbar>
