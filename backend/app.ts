@@ -73,12 +73,12 @@ app.use('*', (_: IHttpRequest, res: Response) => {
 app.use((err: Error, req: IHttpRequest, res: Response, next: NextFunction) => {
 	if (err instanceof HttpError) {
 		// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
-		return sendResponse(res, err.type, err.status, err.message);
+		return sendResponse({ res, statusCode: err.type, status: err.status, message: err.message });
 	}
 
 	logger.error({ err }, 'An unexpected error happened.');
 	// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
-	return sendResponse(res, 500, 'error', 'An unexpected error happened. Try again later');
+	return sendResponse({ res, statusCode: 500, status: 'error', message: 'An unexpected error happened. Try again later' });
 });
 
 export default app;

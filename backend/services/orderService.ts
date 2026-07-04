@@ -5,17 +5,25 @@ import { IOrder, IOrderDto, IOrderProduct } from '../types/IOrder';
 import { IUser } from '../types/IUser';
 import { capitalizeString } from '../utils/capitalizeString';
 import { HttpError, HttpResponseStatuses, HttpResponseTypes } from '../utils/httpError';
+import { IPagination, IPaginationDto } from '../types/IPagination';
 
-export const getOrders = async (userId?: string): Promise<IOrderDto[]> => {
+export const getOrders = async (pagination: IPagination, userId?: string): Promise<IPaginationDto<IOrderDto>> => {
 	const user: IUser | null = await User.findById(userId);
 
 	if (!user) {
 		throw new HttpError(HttpResponseStatuses.NotFound, HttpResponseTypes.Failed, 'There is no user with provided id');
 	}
 
-	const orders = await Order.find({ userID: user.id });
+	const filters = {
+		userID: user.id,
+	};
 
-	return orders.map((order) => toDto(order));
+	const [orderEntities, total] = await Promise.all([
+		Order.find(filters).skip(pagination.offset).limit(pagination.limit),
+		Order.countDocuments(filters),
+	]);
+
+	return { data: orderEntities.map((order) => toDto(order)), total };
 };
 
 export const getOrderById = async (id: string, userId?: string): Promise<IOrderDto> => {

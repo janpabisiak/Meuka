@@ -1,9 +1,15 @@
+export enum Categories {
+	Men = 'men',
+	Women = 'women',
+	Kids = 'kids',
+}
+
 export interface IProduct {
 	id: string;
 	title: string;
 	price: number;
 	description?: string;
-	category: string;
+	category: Categories;
 	images: string[];
 	colors: string[];
 	sizes: string[];

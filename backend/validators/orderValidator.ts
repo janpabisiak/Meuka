@@ -1,4 +1,5 @@
 import { body } from 'express-validator';
+import { paginationValidator } from './paginationValidator';
 import { firstNameValidation, idValidation, lastNameValidation } from './userValidator';
 
 export const create = [
@@ -14,3 +15,5 @@ export const create = [
 ];
 
 export const get = idValidation;
+
+export const getAll = paginationValidator;
