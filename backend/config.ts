@@ -79,3 +79,5 @@ export const BCRYPT_ROUNDS = getEnvironmentVariable('BCRYPT_ROUNDS', Environment
 
 export const LOG_LEVEL = getEnvironmentVariable('LOG_LEVEL');
 export const LOG_TO_FILE = getEnvironmentVariable('LOG_TO_FILE', EnvironmentVariableTypes.Boolean, 'true');
+
+export const PAGINATION_LIMIT = getEnvironmentVariable('PAGINATION_LIMIT', EnvironmentVariableTypes.Number);

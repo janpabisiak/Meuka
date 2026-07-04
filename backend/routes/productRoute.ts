@@ -6,8 +6,8 @@ import { authMiddleware } from '../middlewares/authMiddleware';
 
 const router = express.Router();
 
+router.get('/', productValidator.getAll, validationMiddleware, productController.getProducts);
 router.get('/:id', productValidator.get, validationMiddleware, productController.getProduct);
-router.get('/', productController.getProducts);
 router.post('/add', authMiddleware, productValidator.create, validationMiddleware, productController.addProduct);
 
 export default router;

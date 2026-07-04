@@ -21,7 +21,7 @@ const initialState: IUser = {
 	cart: [],
 	orders: [],
 	isAuthenticated: false,
-	isLoading: false,
+	isLoading: true,
 	isSyncNeeded: false,
 };
 
@@ -87,7 +87,7 @@ const UserContext = createContext<
 function UserProvider({ children }: { children: ReactNode }) {
 	const [{ _id, username, email, firstName, lastName, cart, orders, isAuthenticated, isLoading, isSyncNeeded }, dispatch] = useReducer(
 		reducer,
-		initialState
+		initialState,
 	);
 
 	// Fetch user data on mount

@@ -1,5 +1,7 @@
 .orders {
 	@include section;
+	justify-content: flex-start;
+	flex-direction: column;
 
 	&__list {
 		display: flex;

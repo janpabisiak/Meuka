@@ -2,14 +2,15 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../contexts/userContext';
 
-// Hook to verify if user is authenticated
 function useAuthVerify(authNeeded = true) {
 	const {
-		state: { isAuthenticated },
+		state: { isAuthenticated, isLoading },
 	} = useUser();
 	const navigate = useNavigate();
 
 	useEffect(() => {
+		if (isLoading) return;
+
 		if (!authNeeded && isAuthenticated) {
 			navigate('../', { replace: true });
 		}
@@ -17,7 +18,7 @@ function useAuthVerify(authNeeded = true) {
 		if (authNeeded && !isAuthenticated) {
 			navigate('../login', { replace: true });
 		}
-	}, [authNeeded, isAuthenticated, navigate]);
+	}, [authNeeded, isLoading, isAuthenticated, navigate]);
 }
 
 export default useAuthVerify;

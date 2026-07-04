@@ -5,7 +5,7 @@ import * as orderValidator from '../validators/orderValidator';
 
 const router = express.Router();
 
-router.get('/', orderController.getOrders);
+router.get('/', orderValidator.getAll, validationMiddleware, orderController.getOrders);
 router.get('/:id', orderValidator.get, validationMiddleware, orderController.getOrder);
 router.post('/', orderValidator.create, validationMiddleware, orderController.createOrder);
 

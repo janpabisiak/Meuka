@@ -1,16 +1,27 @@
+import { RootFilterQuery } from 'mongoose';
 import Product from '../models/productSchema';
+import { IPagination, IPaginationDto } from '../types/IPagination';
 import { IProduct, IProductDto } from '../types/IProduct';
 import { HttpError, HttpResponseStatuses, HttpResponseTypes } from '../utils/httpError';
+import { capitalizeString } from '../utils/capitalizeString';
 
-export const getProducts = async (category?: string): Promise<IProductDto[]> => {
-	const query = Product.find().select('-__v');
-	if (category) {
-		query.where({ category });
+export const getProducts = async (pagination: IPagination, search?: string, category?: string): Promise<IPaginationDto<IProductDto>> => {
+	const filters: RootFilterQuery<IProduct> = {};
+
+	if (search) {
+		filters.title = new RegExp(search, 'i');
 	}
 
-	const products = await query;
+	if (category) {
+		filters.category = capitalizeString(category);
+	}
 
-	return products.map((product) => toDto(product));
+	const [products, total] = await Promise.all([
+		Product.find(filters).skip(pagination.offset).limit(pagination.limit),
+		Product.countDocuments(filters),
+	]);
+
+	return { data: products.map((product) => toDto(product)), total };
 };
 
 export const getProductById = async (id: string): Promise<IProductDto> => {

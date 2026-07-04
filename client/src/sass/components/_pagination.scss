@@ -1,0 +1,31 @@
+.pagination {
+	width: 100%;
+
+	&__list {
+		display: flex;
+		justify-content: center;
+		gap: 1rem;
+		list-style: none;
+		width: 100%;
+	}
+
+	&__item {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-size: 1.6rem;
+		color: $color-text-primary;
+		padding: 0.5rem 1rem;
+		height: 4rem;
+		min-width: 4rem;
+		border: 2px solid $color-text-primary;
+		cursor: pointer;
+		transition-duration: 300ms;
+
+		&:hover,
+		&.active {
+			background-color: $color-text-primary;
+			color: $color-light;
+		}
+	}
+}

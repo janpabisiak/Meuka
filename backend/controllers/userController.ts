@@ -9,7 +9,13 @@ export const getUser = catchError(async (req: IHttpRequest, res: Response): Prom
 	const userId = req.userId;
 
 	req.log.info({ userId }, 'User fetch attempt.');
-	sendResponse(res, 200, 'success', 'User successfully fetched', await userService.getUserById(userId));
+	sendResponse({
+		res,
+		statusCode: 200,
+		status: 'success',
+		message: 'User successfully fetched',
+		data: await userService.getUserById(userId),
+	});
 });
 
 export const createUser = catchError(async (req: IHttpRequest, res: Response): Promise<void> => {
@@ -18,7 +24,7 @@ export const createUser = catchError(async (req: IHttpRequest, res: Response): P
 
 	req.log.info({ username, email, firstName, lastName }, 'User creation attempt.');
 	const { user, token } = await userService.createUser(username, email, password, firstName, lastName);
-	sendResponse(res, 201, 'success', 'User successfully created', user, token);
+	sendResponse({ res, statusCode: 201, status: 'success', message: 'User successfully created', data: user, token });
 });
 
 export const loginUser = catchError(async (req: IHttpRequest, res: Response): Promise<void> => {
@@ -27,7 +33,7 @@ export const loginUser = catchError(async (req: IHttpRequest, res: Response): Pr
 
 	req.log.info({ email }, 'User login attempt.');
 	const { user, token } = await userService.loginUser(email, password);
-	sendResponse(res, 200, 'success', 'User successfully logged in', user, token);
+	sendResponse({ res, statusCode: 200, status: 'success', message: 'User successfully logged in', data: user, token });
 });
 
 export const changePassword = catchError(async (req: IHttpRequest, res: Response): Promise<void> => {
@@ -36,13 +42,13 @@ export const changePassword = catchError(async (req: IHttpRequest, res: Response
 	const userId = req.userId;
 
 	req.log.info({ userId }, 'Password change attempt.');
-	sendResponse(
+	sendResponse({
 		res,
-		201,
-		'success',
-		'Password successfully changed',
-		await userService.changePassword(currentPassword, newPassword, userId),
-	);
+		statusCode: 201,
+		status: 'success',
+		message: 'Password successfully changed',
+		data: await userService.changePassword(currentPassword, newPassword, userId),
+	});
 });
 
 export const updateUser = catchError(async (req: IHttpRequest, res: Response): Promise<void> => {
@@ -51,7 +57,13 @@ export const updateUser = catchError(async (req: IHttpRequest, res: Response): P
 	const userId = req.userId;
 
 	req.log.info({ firstName, lastName, email, userId }, 'User update attempt.');
-	sendResponse(res, 201, 'success', 'User successfully updated', await userService.updateUser(firstName, lastName, email, userId));
+	sendResponse({
+		res,
+		statusCode: 201,
+		status: 'success',
+		message: 'User successfully updated',
+		data: await userService.updateUser(firstName, lastName, email, userId),
+	});
 });
 
 export const deleteUser = catchError(async (req: IHttpRequest, res: Response): Promise<void> => {
@@ -60,5 +72,5 @@ export const deleteUser = catchError(async (req: IHttpRequest, res: Response): P
 
 	req.log.info({ id, userId }, 'User deletion attempt.');
 	await userService.deleteUser(id, userId);
-	sendResponse(res, 204, 'success', 'User successfully deleted');
+	sendResponse({ res, statusCode: 204, status: 'success', message: 'User successfully deleted' });
 });

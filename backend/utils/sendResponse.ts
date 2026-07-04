@@ -1,10 +1,24 @@
 import { Response } from 'express';
 import { IHttpResponse } from '../types/IHttpResponse';
 
-const sendResponse = (res: Response, statusCode: number, status: string, message: string, data?: unknown, token?: string) => {
+interface ISendResponseInput {
+	res: Response;
+	statusCode: number;
+	status: string;
+	message: string;
+	data?: unknown;
+	total?: number;
+	token?: string;
+}
+
+const sendResponse = ({ res, statusCode, status, message, data, total, token }: ISendResponseInput) => {
 	const responseBody: IHttpResponse = { status, message };
 	if (data) {
 		responseBody.data = data;
+	}
+
+	if (total) {
+		responseBody.total = total;
 	}
 
 	if (token) {
